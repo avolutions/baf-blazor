@@ -30,6 +30,7 @@
   
   <ItemGroup>
     <PackageReference Include="Avolutions.Baf.Core" Version="0.1.0" />
+    <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
     <PackageReference Include="MudBlazor" Version="8.11.0" />
   </ItemGroup>
 

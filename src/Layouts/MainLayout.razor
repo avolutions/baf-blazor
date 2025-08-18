@@ -1,7 +1,13 @@
-﻿@inherits LayoutComponentBase
+﻿@using Avolutions.Baf.Blazor.Components.User
+@using Avolutions.BAF.Core.Identity.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Identity
+@inherits LayoutComponentBase
 
 @inject LoadingService LoadingService
 @inject ISettings<ThemeSettings> ThemeSettings
+@inject UserManager<User> UserManager
 
 <MudThemeProvider Theme="@_theme"/>
 <MudPopoverProvider />
@@ -16,8 +22,24 @@
             ApplicationTitle
         </MudText>
         <MudSpacer />
-        
+            
         <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                @if (_user != null)
+                {
+                    <UserAvatar User="_user" Size="Size.Small" WithName="true" />
+                }
+                <form action="Account/Logout" method="post">
+                    <AntiforgeryToken/>
+                    <MudIconButton
+                        Icon="@Icons.Material.Filled.Logout"
+                        ButtonType="ButtonType.Submit"
+                        Color="Color.Inherit"
+                        Class="ml-2"/>
+                </form>
+            </Authorized>
+        </AuthorizeView>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu T="MainMenu"/>
@@ -42,16 +64,25 @@
 @code {
     private bool _drawerOpen = true;
     private MudTheme _theme = new();
+    private User? _user;
+
+    [CascadingParameter] private Task<AuthenticationState> AuthTask { get; set; } = default!;
 
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         LoadingService.OnLoadingChanged += StateHasChanged;
         _theme = Theme.Create(ThemeSettings.Value);
+        
+        var auth = await AuthTask;
+        if (auth.User.Identity?.IsAuthenticated == true)
+        {
+            _user = await UserManager.GetUserAsync(auth.User);
+        }
     }
     
     public void Dispose()
