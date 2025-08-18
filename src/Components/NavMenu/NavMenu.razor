@@ -1,0 +1,32 @@
+﻿@typeparam T where T : IMenu
+
+@using Avolutions.BAF.Core.Menu.Abstractions
+@using Avolutions.BAF.Core.Menu.Models
+@using Avolutions.BAF.Core.Menu.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject MenuProvider<T> MenuProvider
+
+<MudNavMenu Bordered="true" Color="Color.Primary" Margin="Margin.Normal">
+    @if (_menuItems != null)
+    {
+        foreach (var item in _menuItems)
+        {
+            <NavMenuItem Item="item"/>
+        }
+    }
+</MudNavMenu>
+
+@code {
+    private List<MenuItem>? _menuItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        _menuItems = MenuProvider.GetMenuItemsVisibleToUser(user);
+    }
+}

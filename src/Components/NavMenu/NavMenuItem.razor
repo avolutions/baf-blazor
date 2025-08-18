@@ -1,0 +1,23 @@
+﻿@using Avolutions.BAF.Core.Menu.Models
+@using Microsoft.AspNetCore.Components.Routing
+@using MudBlazor
+
+@if (Item.Children.Any())
+{
+    <MudNavGroup Title="@Item.Title" Icon="@Item.Icon">
+        @foreach (var child in Item.Children)
+        {
+            <NavMenuItem Item="child" />
+        }
+    </MudNavGroup>
+}
+else
+{
+    <MudNavLink Href="@Item.Url" Icon="@Item.Icon" Match="NavLinkMatch.All">
+        @Item.Title
+    </MudNavLink>
+}
+
+@code {
+    [Parameter] public required MenuItem Item { get; set; }
+}
