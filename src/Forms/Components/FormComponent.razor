@@ -1,0 +1,133 @@
+﻿@typeparam T
+
+@using Avolutions.Baf.Blazor.Forms.Helpers
+@using Avolutions.Baf.Blazor.Forms.Services
+@using FluentValidation
+@using KellermanSoftware.CompareNetObjects
+@using Mapster
+@using Microsoft.AspNetCore.Components.Routing
+@using MudBlazor
+@using Severity = MudBlazor.Severity
+
+@inject ConfirmLeaveDialogService DialogService
+@inject IValidator<T> Validator
+
+@if (!IsSubForm)
+{
+    <NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync"/>
+}
+
+<MudForm Model="Model" @ref="@_form" Validation="@FluentValidatorHelper.CreateValidateValue(Validator)">
+    @ChildContent(Model)
+
+    @if (_errors.Count > 0)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mt-2">
+            @foreach (var error in _errors)
+            {
+                <div>@error</div>
+            }
+        </MudAlert>
+    }
+
+    @if (!IsSubForm && ShowButtons)
+    {
+        <MudStack Row Spacing="5" Class="mt-4" Justify="Justify.FlexEnd">
+            <MudButton
+                Color="Color.Default"
+                OnClick="Cancel"
+                Variant="Variant.Filled">
+                cancel
+            </MudButton>
+            <MudButton
+                Color="Color.Primary"
+                OnClick="@(async () => await Submit())"
+                Variant="Variant.Filled">
+                save
+            </MudButton>
+        </MudStack>
+    }
+</MudForm>
+
+@code {
+    [Parameter, EditorRequired] public required T Model { get; set; }
+    [Parameter, EditorRequired] public required RenderFragment<T> ChildContent { get; set; } = null!;
+    
+    [Parameter] public EventCallback OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    
+    [Parameter] public bool IsSubForm { get; set; }
+    [Parameter] public bool ShowButtons { get; set; } = true;
+    
+    private MudForm _form = null!;
+    private readonly List<string> _errors = [];
+    private bool _canNavigate;
+    private T? OriginalModel { get; set; }
+    private readonly CompareLogic _comparer = new();
+    
+    protected override Task OnInitializedAsync()
+    {
+        OriginalModel = Model.Adapt<T>();
+        return Task.CompletedTask;
+    }
+
+    public bool IsValid()
+    {
+        return _form.IsValid;
+    }
+
+    public async Task<bool> ValidateAsync()
+    {
+        await _form.Validate();
+        return IsValid();
+    }
+    
+    public async Task Submit()
+    {
+        _errors.Clear();
+        
+        if (await ValidateAsync() && OnSubmit.HasDelegate)
+        {
+            try
+            {
+                _canNavigate = true;
+                await OnSubmit.InvokeAsync();
+            }
+            catch (Exception ex)
+            {
+                _errors.AddRange(ex.Message.Split(Environment.NewLine));
+            }
+        }
+    }
+
+    private async Task Cancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+    
+    private async Task<bool> ConfirmLeaveAsync(LocationChangingContext context)
+    {
+        if (_canNavigate)
+        {
+            return true;
+        }
+        
+        var compareResult = _comparer.Compare(OriginalModel, Model);
+        if (compareResult.AreEqual)
+        {
+            return true;
+        }
+
+        var result = await DialogService.ShowAsync();
+        if (result != null && !result.Canceled)
+        {
+            return true;
+        }
+
+        context.PreventNavigation();
+        return false;
+    }
+}
