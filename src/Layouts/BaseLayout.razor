@@ -1,21 +1,17 @@
-﻿@inherits LayoutComponentBase
-
-@inject ISettings<ThemeSettings> ThemeSettings
+﻿@inject ISettings<ThemeSettings> ThemeSettings
 
 <MudThemeProvider Theme="@_theme"/>
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<NavigationLock />
 
 <MudLayout>
-    <MudMainContent Class="pa-0" Style="background-color: var(--mud-palette-background-gray);">
-        <MudContainer Style="height: 100vh;">
-            @Body
-        </MudContainer>
-    </MudMainContent>
+    @ChildContent
 </MudLayout>
 
 @code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
     private MudTheme _theme = new();
     
     protected override void OnInitialized()

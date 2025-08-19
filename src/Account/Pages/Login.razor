@@ -1,6 +1,6 @@
 ﻿@page "/Account/Login"
 
-@layout LoginLayout
+@layout PlainLayout
 
 @attribute [ExcludeFromInteractiveRouting]
 
@@ -32,9 +32,11 @@
                     <MudGrid>
                         @if (_errorMessage != null)
                         {
-                            <MudAlert Variant="Variant.Outlined"
-                                      Severity="Severity.Error">@_errorMessage
-                            </MudAlert>
+                            <MudItem xs="12">
+                                <MudAlert Variant="Variant.Outlined"
+                                          Severity="Severity.Error">@_errorMessage
+                                </MudAlert>
+                            </MudItem>
                         }
                         <MudItem xs="12">
                             <MudStaticTextField @bind-Value="Input.Username"
