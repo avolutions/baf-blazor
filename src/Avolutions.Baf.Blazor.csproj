@@ -29,10 +29,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avolutions.Baf.Core" Version="0.1.0" />
-    <PackageReference Include="CompareNETObjects" Version="4.84.0" />
+    <PackageReference Include="Avolutions.Baf.Core" Version="0.2.0" />
+    <PackageReference Include="CompareNETObjects" Version="4.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
-    <PackageReference Include="MudBlazor" Version="8.11.0" />
+    <PackageReference Include="MudBlazor" Version="8.*" />
   </ItemGroup>
 
 </Project>
