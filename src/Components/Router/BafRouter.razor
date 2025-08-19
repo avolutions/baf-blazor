@@ -1,12 +1,15 @@
 ﻿@using System.Reflection
 @using Avolutions.Baf.Blazor.Layouts
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
 
-<Router AppAssembly="Assembly.GetEntryAssembly()">
-    <Found Context="routeData"> <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="routeData" Selector="h1"/> 
+<Router AppAssembly="Assembly.GetEntryAssembly()"
+        AdditionalAssemblies="[typeof(AssemblyMarker).Assembly]">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
+        </AuthorizeRouteView>
     </Found>
 </Router>
-
-@code {
-}

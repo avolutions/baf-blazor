@@ -1,0 +1,19 @@
+﻿@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText>confirm-leave-dialog.content</MudText>
+        <MudText Class="mt-2">confirm-leave-dialog.question</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">no</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Leave">yes</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    private void Cancel() => MudDialog.Cancel();
+    private void Leave() => MudDialog.Close(DialogResult.Ok(true));
+}

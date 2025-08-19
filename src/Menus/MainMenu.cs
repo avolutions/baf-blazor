@@ -1,4 +1,4 @@
-﻿using Avolutions.BAF.Core.Menu.Abstractions;
+﻿using Avolutions.Baf.Core.Menu.Abstractions;
 
 namespace Avolutions.Baf.Blazor.Menus;
 

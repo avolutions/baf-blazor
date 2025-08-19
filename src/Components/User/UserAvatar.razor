@@ -1,0 +1,28 @@
+﻿@using Avolutions.Baf.Core.Identity.Models
+@using MudBlazor
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+    <MudAvatar 
+        Size="Size"
+        Style="@($"background-color:{AvatarColors.Background}; color:{AvatarColors.Text};")">
+        @User.GetInitials()
+    </MudAvatar>
+
+    @if (WithName)
+    {
+        <MudText Typo="Typo.body1">@User.GetName()</MudText>
+    }
+</MudStack>
+
+@code {
+    [Parameter]
+    public required User User { get; set; }
+    
+    [Parameter]
+    public required Size Size { get; set; } = Size.Large;
+    
+    [Parameter]
+    public bool WithName { get; set; }
+    
+    private (string Background, string Text) AvatarColors => User.GetAvatarColors();
+}

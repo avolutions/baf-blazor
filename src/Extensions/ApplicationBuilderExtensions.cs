@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Avolutions.Baf.Blazor.Infrastructure;
+using Microsoft.AspNetCore.Builder;
 
 namespace Avolutions.Baf.Blazor.Extensions;
 
@@ -7,8 +7,14 @@ public static class ApplicationBuilderExtensions
 {
     public static WebApplication UseBafBlazor<TApp>(this WebApplication app)
     {
+        app.UseMiddleware<SetupRedirectMiddleware>();
+        
+        app.UseStaticFiles();
+        app.UseAntiforgery();
+
         app.MapRazorComponents<TApp>()
-            .AddInteractiveServerRenderMode();
+            .AddInteractiveServerRenderMode()
+            .AddAdditionalAssemblies(typeof(AssemblyMarker).Assembly);
 
         return app;
     }
