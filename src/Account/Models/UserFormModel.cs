@@ -1,4 +1,4 @@
-﻿using Avolutions.BAF.Core.Identity.Models;
+﻿using Avolutions.Baf.Core.Identity.Models;
 
 namespace Avolutions.Baf.Blazor.Account.Models;
 

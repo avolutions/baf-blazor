@@ -1,5 +1,5 @@
 ﻿using Avolutions.Baf.Blazor.Forms.Services;
-using Avolutions.BAF.Core.Module.Abstractions;
+using Avolutions.Baf.Core.Module.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Avolutions.Baf.Blazor.Forms;
