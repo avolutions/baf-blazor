@@ -1,0 +1,114 @@
+﻿@page "/setup"
+
+@layout PlainLayout
+
+@using Avolutions.Baf.Blazor.Account.Models
+@using Avolutions.Baf.Blazor.Forms.Components
+@using Avolutions.Baf.Blazor.Inputs.Components
+@using Avolutions.Baf.Blazor.Layouts
+@using Avolutions.BAF.Core.Identity.Models
+@using Avolutions.Baf.Core.Identity.Services
+@using Avolutions.Baf.Core.Setup.Services
+@using Microsoft.AspNetCore.Components.Web
+@using MudBlazor
+
+@inject ISetupService SetupService
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+
+<PageTitle>Setup</PageTitle>
+
+<MudText Class="py-5" Typo="Typo.h4">Initial setup</MudText>
+<MudPaper>
+    <MudStepper OnPreviewInteraction="OnPreviewInteraction">
+        <MudStep Title="Create User" Class="py-2">
+            <FormComponent T="UserFormModel"
+                           @ref="_form"
+                           Model="_userForm"
+                           OnSubmit="Submit"
+                           ShowButtons="false">
+                <ChildContent Context="model">
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudTextField
+                                @bind-Value="model.Firstname"
+                                For="@(() => model.Firstname)"
+                                Label="field.firstname"
+                                Required="true"
+                                Variant="Variant.Outlined"
+                            />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField
+                                @bind-Value="model.Lastname"
+                                For="@(() => model.Lastname)"
+                                Label="field.lastname"
+                                Required="true"
+                                Variant="Variant.Outlined"
+                            />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField
+                                @bind-Value="model.UserName"
+                                For="@(() => model.UserName)"
+                                Label="field.username"
+                                Required="true"
+                                Variant="Variant.Outlined"
+                            />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <PasswordField 
+                                @bind-Value="model.Password"
+                                For="@(() => model.Password)"
+                                Label="field.password"
+                                Required="true"
+                                Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <PasswordField
+                                @bind-Value="model.PasswordConfirm"
+                                For="@(() => model.PasswordConfirm)"
+                                Label="field.password-confirm"
+                                Required="true"
+                                Variant="Variant.Outlined" />
+                        </MudItem>
+                    </MudGrid>
+                </ChildContent>
+            </FormComponent>
+        </MudStep>
+    </MudStepper>
+</MudPaper>
+
+@code {
+    private FormComponent<UserFormModel> _form;
+    private readonly User _user = new();
+    private readonly UserFormModel _userForm = new();
+    
+    protected override Task OnInitializedAsync()
+    {
+        _userForm.RoleName = SystemRoles.Administrator;
+        return Task.CompletedTask;
+    }
+
+    private async Task OnPreviewInteraction(StepperInteractionEventArgs arg)
+    {
+        if (arg.Action == StepAction.Complete && arg.StepIndex == 0)
+        {
+            await _form.Submit();
+            arg.Cancel = true;
+        }
+    }
+    
+    private async Task Submit()
+    {
+        _user.Firstname = _userForm.Firstname;
+        _user.Lastname = _userForm.Lastname;
+        _user.UserName = _userForm.UserName;
+        _user.RoleName = _userForm.RoleName;
+        
+        // TODO check if user was created (use try catch and show error)
+        await UserService.CreateAsync(_user, _userForm.Password);
+        await SetupService.CompleteSetupAsync();
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}

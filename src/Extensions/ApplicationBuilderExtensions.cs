@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Avolutions.Baf.Blazor.Infrastructure;
+using Microsoft.AspNetCore.Builder;
 
 namespace Avolutions.Baf.Blazor.Extensions;
 
@@ -6,6 +7,8 @@ public static class ApplicationBuilderExtensions
 {
     public static WebApplication UseBafBlazor<TApp>(this WebApplication app)
     {
+        app.UseMiddleware<SetupRedirectMiddleware>();
+        
         app.UseStaticFiles();
         app.UseAntiforgery();
 
