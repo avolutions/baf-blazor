@@ -32,6 +32,7 @@
     <PackageReference Include="Avolutions.Baf.Core" Version="0.2.0" />
     <PackageReference Include="CompareNETObjects" Version="4.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="MudBlazor" Version="8.*" />
   </ItemGroup>
 
