@@ -1,0 +1,94 @@
+﻿@typeparam T
+@attribute [CascadingTypeParameter(nameof(T))]
+
+@using Avolutions.Baf.Blazor.DataTable.Models
+@using MudBlazor
+
+<div class="baf-data-table">
+    @if (Filter is not null)
+    {
+        <MudTextField @bind-Value="_searchTerm"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="mb-4"
+                      Clearable="true"
+                      Immediate="true"
+                      Placeholder="list.search-placeholder"
+                      Variant="Variant.Outlined" />
+    }
+
+    <MudDataGrid T="T"
+                 Hover="true"
+                 Items="Items"
+                 Loading="Loading"
+                 LoadingProgressColor="Color.Secondary"
+                 QuickFilter="CombinedFilter"
+                 RowClick="OnRowClick"
+                 SortMode="SortMode.Single"
+                 @attributes="AdditionalAttributes">
+        
+        <Columns>
+            @Columns
+            
+            @if (RowActions is not null && RowActions.Count > 0)
+            {
+                <TemplateColumn StickyRight="true" CellStyle="width: auto; white-space: nowrap; padding: 0 5pt; width: 1%">
+                    <CellTemplate>
+                        <div class="row-action-buttons">
+                            @foreach (var action in RowActions)
+                            {
+                                <MudTooltip Text="@action.GetText(context.Item)">
+                                    <MudIconButton Icon="@action.GetIcon(context.Item)"
+                                                   Color="@action.GetColor(context.Item)"
+                                                   Size="Size.Medium"
+                                                   OnClick="@(() => action.InvokeAsync(context.Item))" />
+                                </MudTooltip>
+                            }
+                        </div>
+                    </CellTemplate>
+                </TemplateColumn>
+            }
+        </Columns>
+        
+        <NoRecordsContent>
+            @if(NoRecordsContent is null)
+            {
+                <MudText>No records found.</MudText>
+            }
+            else
+            {
+                @NoRecordsContent
+            }
+        </NoRecordsContent>
+    </MudDataGrid>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? Columns { get; set; }
+    [Parameter] public RenderFragment? NoRecordsContent { get; set; }
+    
+    [Parameter] public Func<T, string, bool>? Filter { get; set; }
+    [Parameter] public required IEnumerable<T> Items { get; set; }
+    [Parameter] public bool Loading { get; set; }
+    [Parameter] public EventCallback<DataGridRowClickEventArgs<T>> OnRowClick { get; set; }
+    [Parameter] public List<RowAction<T>>? RowActions { get; set; }
+    
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    
+    private string _searchTerm = string.Empty;
+    
+    private bool CombinedFilter(T item)
+    {
+        if (Filter is null)
+        {
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            return true;
+        }
+
+        return Filter(item, _searchTerm);
+    }
+}
