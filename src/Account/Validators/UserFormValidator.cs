@@ -1,32 +1,34 @@
 ﻿using Avolutions.Baf.Blazor.Account.Models;
+using Avolutions.Baf.Core.Identity.Resources;
 using FluentValidation;
+using Microsoft.Extensions.Localization;
 
 namespace Avolutions.Baf.Blazor.Account.Validators;
 
 public class UserFormValidator : AbstractValidator<UserFormModel>
 {
-    public UserFormValidator()
+    public UserFormValidator(IStringLocalizer<IdentityResources> localizer)
     {
         RuleFor(x => x.Firstname)
             .NotEmpty()
-            .WithName("field.firstname");
+            .WithName(localizer["field.firstname"]);
         
         RuleFor(x => x.Lastname)
             .NotEmpty()
-            .WithName("field.lastname");
+            .WithName(localizer["field.lastname"]);
         
         RuleFor(x => x.UserName)
             .NotEmpty()
-            .WithName("field.username");
+            .WithName(localizer["field.username"]);
         
         RuleFor(x => x.Password)
             .NotEmpty()
-            .WithName("field.password");
+            .WithName(localizer["field.password"]);
         
         RuleFor(x => x.PasswordConfirm)
             .NotEmpty()
-            .WithName("field.password-confirm")
+            .WithName(localizer["field.password-confirm"])
             .Equal(x => x.Password)
-            .WithMessage("validation.password-equal");
+            .WithMessage(localizer["validation.password-equal"]);
     }
 }

@@ -2,7 +2,11 @@
 @attribute [CascadingTypeParameter(nameof(T))]
 
 @using Avolutions.Baf.Blazor.DataTable.Models
+@using Avolutions.Baf.Blazor.DataTable.Resources
+@using Microsoft.Extensions.Localization
 @using MudBlazor
+
+@inject IStringLocalizer<DataTableResources> L
 
 <div class="baf-data-table">
     @if (Filter is not null)
@@ -13,7 +17,7 @@
                       Class="mb-4"
                       Clearable="true"
                       Immediate="true"
-                      Placeholder="list.search-placeholder"
+                      Placeholder=@L["search-placeholder"]
                       Variant="Variant.Outlined" />
     }
 

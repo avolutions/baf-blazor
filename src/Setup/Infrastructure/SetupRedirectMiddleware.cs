@@ -1,7 +1,7 @@
 ﻿using Avolutions.Baf.Core.Setup.Infrastructure;
 using Microsoft.AspNetCore.Http;
 
-namespace Avolutions.Baf.Blazor.Infrastructure;
+namespace Avolutions.Baf.Blazor.Setup.Infrastructure;
 
 public class SetupRedirectMiddleware
 {
