@@ -6,22 +6,28 @@
 @using Avolutions.Baf.Blazor.Forms.Components
 @using Avolutions.Baf.Blazor.Inputs.Components
 @using Avolutions.Baf.Blazor.Layouts
+@using Avolutions.Baf.Blazor.Setup.Resources
 @using Avolutions.Baf.Core.Identity.Models
+@using Avolutions.Baf.Core.Identity.Resources
 @using Avolutions.Baf.Core.Identity.Services
 @using Avolutions.Baf.Core.Setup.Services
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Localization
 @using MudBlazor
 
 @inject ISetupService SetupService
 @inject NavigationManager NavigationManager
 @inject UserService UserService
 
-<PageTitle>Setup</PageTitle>
+@inject IStringLocalizer<SetupResources> L
+@inject IStringLocalizer<IdentityResources> LUser
 
-<MudText Class="py-5" Typo="Typo.h4">Initial setup</MudText>
+<PageTitle>@L["title"]</PageTitle>
+
+<MudText Class="py-5" Typo="Typo.h4">@L["title"]</MudText>
 <MudPaper>
     <MudStepper OnPreviewInteraction="OnPreviewInteraction">
-        <MudStep Title="Create User" Class="py-2">
+        <MudStep Title=@L["create-user"] Class="py-2">
             <FormComponent T="UserFormModel"
                            @ref="_form"
                            Model="_userForm"
@@ -33,7 +39,7 @@
                             <MudTextField
                                 @bind-Value="model.Firstname"
                                 For="@(() => model.Firstname)"
-                                Label="field.firstname"
+                                Label=@LUser["field.firstname"]
                                 Required="true"
                                 Variant="Variant.Outlined"
                             />
@@ -42,7 +48,7 @@
                             <MudTextField
                                 @bind-Value="model.Lastname"
                                 For="@(() => model.Lastname)"
-                                Label="field.lastname"
+                                Label=@LUser["field.lastname"]
                                 Required="true"
                                 Variant="Variant.Outlined"
                             />
@@ -51,7 +57,7 @@
                             <MudTextField
                                 @bind-Value="model.UserName"
                                 For="@(() => model.UserName)"
-                                Label="field.username"
+                                Label=@LUser["field.username"]
                                 Required="true"
                                 Variant="Variant.Outlined"
                             />
@@ -60,7 +66,7 @@
                             <PasswordField 
                                 @bind-Value="model.Password"
                                 For="@(() => model.Password)"
-                                Label="field.password"
+                                Label=@LUser["field.password"]
                                 Required="true"
                                 Variant="Variant.Outlined" />
                         </MudItem>
@@ -68,7 +74,7 @@
                             <PasswordField
                                 @bind-Value="model.PasswordConfirm"
                                 For="@(() => model.PasswordConfirm)"
-                                Label="field.password-confirm"
+                                Label=@LUser["field.password-confirm"]
                                 Required="true"
                                 Variant="Variant.Outlined" />
                         </MudItem>

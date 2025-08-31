@@ -1,0 +1,42 @@
+﻿@typeparam T
+
+@using MudBlazor
+<MudDialog ContentStyle="width: 500px">
+    <DialogContent>
+        <FormComponent T="T"
+                       Model="Model"
+                       @ref="_form"
+                       ShowButtons="false">
+            <DynamicComponent Type="FormComponentType" Parameters="FormParameters" />
+        </FormComponent>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Variant="Variant.Text" OnClick="@Cancel">cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@Save">save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter, EditorRequired] public required T Model { get; set; }
+    [Parameter, EditorRequired] public required Type FormComponentType { get; set; }
+    
+    private FormComponent<T> _form = null!;
+
+    private Dictionary<string, object?> FormParameters => new()
+    {
+        { "Model", Model }
+    };
+    
+    private async Task Save()
+    {
+        await _form.ValidateAsync();
+        if (_form.IsValid())
+        {
+            MudDialog.Close(DialogResult.Ok(Model));
+        }
+    }
+    
+    private void Cancel() => MudDialog.Cancel();
+}

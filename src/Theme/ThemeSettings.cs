@@ -1,5 +1,8 @@
-﻿namespace Avolutions.Baf.Blazor.Theme;
+﻿using Avolutions.Baf.Core.Settings.Attributes;
 
+namespace Avolutions.Baf.Blazor.Theme;
+
+[Settings("Theme")]
 public class ThemeSettings
 {
     public string PrimaryColor { get; set; } = "#3F51B5";

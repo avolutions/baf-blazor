@@ -1,4 +1,4 @@
-﻿using Avolutions.Baf.Blazor.Infrastructure;
+﻿using Avolutions.Baf.Blazor.Setup.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 
 namespace Avolutions.Baf.Blazor.Extensions;

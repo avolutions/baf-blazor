@@ -1,5 +1,8 @@
 # Avolutions BAF Blazor
 
+[![NuGet Version](https://img.shields.io/nuget/v/Avolutions.Baf.Blazor)](https://www.nuget.org/packages/Avolutions.Baf.Blazor)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Avolutions.Baf.Blazor)](https://www.nuget.org/packages/Avolutions.Baf.Blazor)
+
 Blazor component library for the Avolutions Business Application Framework (BAF).
 
 ## Installation
@@ -16,6 +19,7 @@ In your Program.cs, add BAF Blazor to the service collection and middleware pipe
 
 ```csharp
 using Avolutions.Baf.Core.Modules.Extensions;
+using Avolutions.Baf.Blazor.Modules.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,13 +28,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register BAF Core with your DbContext
+// Register BAF Blazor with your DbContext
 builder.Services.AddBafCore<ApplicationDbContext>()
   .AddBafBlazor();
 
 var app = builder.Build();
 
-// Initialize BAF Core
+// Initialize BAF Blazor
 app.UseBafCore()
   .UseBafBlazor<App>();
 

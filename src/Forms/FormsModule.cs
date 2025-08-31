@@ -9,5 +9,6 @@ public class FormsModule : IFeatureModule
     public void Register(IServiceCollection services)
     {
         services.AddScoped<ConfirmLeaveDialogService>();
+        services.AddScoped<FormDialogService>();
     }
 }
