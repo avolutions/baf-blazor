@@ -1,4 +1,6 @@
 ﻿using Avolutions.Baf.Blazor.Forms.Components;
+using Avolutions.Baf.Blazor.Forms.Resources;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 
 namespace Avolutions.Baf.Blazor.Forms.Services;
@@ -6,6 +8,7 @@ namespace Avolutions.Baf.Blazor.Forms.Services;
 public class ConfirmLeaveDialogService
 {
     private readonly IDialogService _dialogService;
+    private readonly IStringLocalizer<FormResources> _localizer;
     
     private readonly DialogOptions _options = new()
     {
@@ -14,15 +17,16 @@ public class ConfirmLeaveDialogService
         CloseOnEscapeKey = true
     };
 
-    public ConfirmLeaveDialogService(IDialogService dialogService)
+    public ConfirmLeaveDialogService(IDialogService dialogService, IStringLocalizer<FormResources> localizer)
     {
         _dialogService = dialogService;
+        _localizer = localizer;
     }
     
     public async Task<DialogResult?> ShowAsync()
     {
         var dialog = await _dialogService.ShowAsync<ConfirmLeaveDialog>(
-            title: "confirm-leave-dialog.title",
+            title: _localizer["confirm-leave-dialog.title"],
             options: _options);
         
         return await dialog.Result;

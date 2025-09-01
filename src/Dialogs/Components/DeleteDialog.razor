@@ -1,0 +1,25 @@
+﻿@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<SharedResources> L
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.body1">
+            @Content
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="@Cancel">@L["button.cancel"]</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="@Delete">@L["button.delete"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter, EditorRequired] public required string Content { get; set; }
+    
+    private void Delete() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}
