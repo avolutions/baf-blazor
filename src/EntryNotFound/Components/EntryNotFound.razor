@@ -1,0 +1,26 @@
+﻿@using Avolutions.Baf.Blazor.EntryNotFound.Resources
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<SharedResources> LShared
+@inject IStringLocalizer<EntryNotFoundResources> L
+
+<MudGrid Class="mt-4">
+    <MudItem xs="12">
+        <MudAlert Severity="Severity.Error">
+            @L["title"]
+        </MudAlert>
+    </MudItem>
+    <MudItem xs="12" Class="d-flex justify-center">
+        <MudButton Href="@BackUrl"
+                   Color="Color.Primary"
+                   Variant="Variant.Filled">
+            @LShared["button.back"]
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter] public string BackUrl { get; set; } = "/";
+}

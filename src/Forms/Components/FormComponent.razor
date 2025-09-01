@@ -2,14 +2,17 @@
 
 @using Avolutions.Baf.Blazor.Forms.Helpers
 @using Avolutions.Baf.Blazor.Forms.Services
+@using Avolutions.Baf.Core.Resources
 @using FluentValidation
 @using KellermanSoftware.CompareNetObjects
 @using Mapster
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.Extensions.Localization
 @using MudBlazor
 @using Severity = MudBlazor.Severity
 
 @inject ConfirmLeaveDialogService DialogService
+@inject IStringLocalizer<SharedResources> L
 @inject IValidator<T> Validator
 
 @if (!IsSubForm)
@@ -35,15 +38,15 @@
         <MudStack Row Spacing="5" Class="mt-4" Justify="Justify.FlexEnd">
             <MudButton
                 Color="Color.Default"
-                OnClick="Cancel"
+                OnClick="@Cancel"
                 Variant="Variant.Filled">
-                cancel
+                @L["button.cancel"]
             </MudButton>
             <MudButton
                 Color="Color.Primary"
                 OnClick="@(async () => await Submit())"
                 Variant="Variant.Filled">
-                save
+                @L["button.save"]
             </MudButton>
         </MudStack>
     }

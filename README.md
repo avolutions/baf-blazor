@@ -19,7 +19,7 @@ In your Program.cs, add BAF Blazor to the service collection and middleware pipe
 
 ```csharp
 using Avolutions.Baf.Core.Modules.Extensions;
-using Avolutions.Baf.Blazor.Modules.Extensions;
+using Avolutions.Baf.Blazor.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,13 +28,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register BAF Blazor with your DbContext
+// Register BAF Core and Blazor
 builder.Services.AddBafCore<ApplicationDbContext>()
   .AddBafBlazor();
 
 var app = builder.Build();
 
-// Initialize BAF Blazor
+// Initialize BAF Core and Blazor
 app.UseBafCore()
   .UseBafBlazor<App>();
 

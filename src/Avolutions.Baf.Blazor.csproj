@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>Avolutions.Baf.Blazor</PackageId>
-    <Version>0.4.0</Version>
+    <Version>0.5.0</Version>
 
     <Title>Avolutions BAF Blazor</Title>
     <Company>Avolutions</Company>
@@ -29,7 +29,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avolutions.Baf.Core" Version="0.4.0" />
+    <PackageReference Include="Avolutions.Baf.Core" Version="0.5.0" />
     <PackageReference Include="CompareNETObjects" Version="4.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
@@ -47,6 +47,18 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DataTableResources.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Dialogs\Resources\DialogResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DialogResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="EntryNotFound\Resources\EntryNotFoundResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>EntryNotFoundResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Forms\Resources\FormResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FormResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -59,6 +71,21 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>DataTableResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Dialogs\Resources\DialogResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DialogResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="EntryNotFound\Resources\EntryNotFoundResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EntryNotFoundResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Forms\Resources\FormResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FormResources.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
