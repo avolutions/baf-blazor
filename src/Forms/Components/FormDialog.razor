@@ -1,6 +1,11 @@
 ﻿@typeparam T
 
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
 @using MudBlazor
+
+@inject IStringLocalizer<SharedResources> L
+
 <MudDialog ContentStyle="width: 500px">
     <DialogContent>
         <FormComponent T="T"
@@ -12,8 +17,8 @@
     </DialogContent>
 
     <DialogActions>
-        <MudButton Variant="Variant.Text" OnClick="@Cancel">cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@Save">save</MudButton>
+        <MudButton Variant="Variant.Text" OnClick="@Cancel">@L["button.cancel"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@Save">@L["button.save"]</MudButton>
     </DialogActions>
 </MudDialog>
 
