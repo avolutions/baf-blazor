@@ -1,0 +1,200 @@
+﻿@using System.Dynamic
+@using Avolutions.Baf.Blazor.Audit.Resources
+@using Avolutions.Baf.Core.Audit.Models
+@using Avolutions.Baf.Core.Identity.Caching
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using Newtonsoft.Json
+
+@inject IStringLocalizer<AuditResources> L
+@inject IUserCache UserCache
+
+ <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+    <MudText Typo="Typo.h6">
+        @L["title", Items.Count]
+    </MudText>
+    <MudElement>
+        <MudSelect T="SortOrder" Value="@_sort" ValueChanged="OnSortChanged" Variant="Variant.Outlined">
+            <MudSelectItem Value="SortOrder.NewestFirst">@L["newest-first"]</MudSelectItem>
+            <MudSelectItem Value="SortOrder.OldestFirst">@L["oldest-first"]t</MudSelectItem>
+        </MudSelect>
+    </MudElement>
+</MudStack>
+
+<MudTimeline TimelinePosition="TimelinePosition.Start" Modifiers="true">
+    @foreach (var item in SortedItems())
+    {
+        var newMap = ToDict(item.NewState);
+        var oldMap = ToDict(item.OldState);
+        var userInfo = UserCache.Get(item.CreatedBy);
+
+        // Build the field list from NewState keys
+        var changedFields = newMap.Keys
+            .OrderBy(k => k, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        
+        <MudTimelineItem @key="item.Id" Color="Color.Primary" Size="Size.Medium">
+            <ItemDot>
+                <MudIcon Icon="@GetIcon(item.Action)" />
+            </ItemDot>
+            <ItemContent>
+                <MudCard Elevation="25">
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Style="@($"background-color:{userInfo.AvatarColor.Background}; color:{userInfo.AvatarColor.Text};")">
+                                @userInfo.Initials
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.body1">@GetTitle(item.Action, userInfo.Name, changedFields)</MudText>
+                            <MudText Typo="Typo.body2">@GetTracking(item.CreatedAt)</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudTooltip Text="@(IsOpen(item.Id) ? L["hide-details"] : L["show-details"])">
+                                <MudIconButton
+                                    Icon="@(IsOpen(item.Id) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                    Color="Color.Default"
+                                    OnClick="@(() => Toggle(item.Id))"/>
+                            </MudTooltip>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+
+                    <MudCollapse Expanded="@IsOpen(item.Id)">
+                        <MudCardContent Class="pt-0">
+                            <MudSimpleTable Elevation="1" Bordered="true" FixedHeader="true">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%"></th>
+                                        <th style="width: 40%">@L["old-value"]</th>
+                                        <th style="width: 40%">@L["new-value"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var key in newMap.Keys.OrderBy(k => k, StringComparer.OrdinalIgnoreCase))
+                                {
+                                    oldMap.TryGetValue(key, out var oldValue);
+                                    var newValue = newMap[key];
+
+                                    <tr>
+                                        <td style="font-weight: 500">@TranslatedField(key)</td>
+                                        <td>@RenderValue(oldValue)</td>
+                                        <td>@RenderValue(newValue)</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCollapse>
+                </MudCard>
+            </ItemContent>
+        </MudTimelineItem>
+    }
+</MudTimeline>
+
+
+@code {
+    [Parameter] public IReadOnlyList<AuditLog> Items { get; set; } = [];
+    [Parameter] public IStringLocalizer? LFields { get; set; }
+    
+    private Guid? _expandedId;
+    private SortOrder _sort = SortOrder.NewestFirst;
+
+    public enum SortOrder { NewestFirst, OldestFirst }
+    
+    private void OnSortChanged(SortOrder order)
+    {
+        _sort = order;
+        _expandedId = null;
+        StateHasChanged();
+    }
+
+    private IEnumerable<AuditLog> SortedItems()
+        => _sort == SortOrder.NewestFirst
+            ? Items.OrderByDescending(i => i.CreatedAt)
+            : Items.OrderBy(i => i.CreatedAt);    
+
+    private bool IsOpen(Guid id) => _expandedId == id;
+
+    private void Toggle(Guid id) => _expandedId = IsOpen(id) ? null : id;
+
+    private string TranslatedField(string fieldName)
+        => LFields is null ? fieldName
+            : LFields[$"Field.{fieldName}"].Value;
+    
+    private static string GetIcon(AuditAction action) => action switch
+    {
+        AuditAction.Created => Icons.Material.Filled.Add,
+        AuditAction.Updated => Icons.Material.Filled.Edit,
+        AuditAction.Deleted => Icons.Material.Filled.Delete,
+        _ => Icons.Material.Filled.QuestionMark
+    };
+
+    private string GetTitle(AuditAction action, string userName, IList<string>? changedFields = null)
+        => action switch
+        {
+            AuditAction.Created => L["action.created", userName],
+            AuditAction.Deleted => L["action.deleted", userName],
+            AuditAction.Updated => BuildUpdatedTitle(userName, changedFields),
+            _ => L["action.unknown", userName]
+        };
+    
+    private string BuildUpdatedTitle(string userName, IList<string>? changedFields = null)
+    {
+        if (changedFields == null || changedFields.Count == 0)
+        {
+            return L["action.updated", userName];
+        }
+        
+        // Translate field names
+        var fields = changedFields
+            .Select(TranslatedField)
+            .ToList();
+
+        string fieldList;
+        const int max = 3;
+        if (fields.Count <= max)
+        {
+            fieldList = string.Join(", ", fields.Select(f => $"\"{f}\""));
+            
+            return L["action.updated-fields", userName, fieldList];
+        }
+
+        fieldList = string.Join(", ", fields.Take(max).Select(f => $"\"{f}\""));
+        var remaining = fields.Count - max;
+        return L["action.updated-remaining", userName, fieldList, remaining];
+    }
+    
+    private string GetTracking(DateTime timestamp)
+    {
+        return L["timestamp", $"{timestamp:dd. MMM yyyy}", $"{timestamp:HH:mm:ss}"];
+    }
+    
+    private static IDictionary<string, object?> ToDict(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        var expando = JsonConvert.DeserializeObject<ExpandoObject>(json);
+        return (IDictionary<string, object?>?)expando
+               ?? new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+    }
+    
+    private static string RenderValue(object? value)
+    {
+        if (value is null)
+        {
+            return "-";
+        }
+        
+        // Primitive-like values will already be proper .NET types (string, long/double/decimal, bool, DateTime/Offset)
+        // For objects/arrays, render compact JSON so it's readable.
+        return value is string or bool or char
+            or sbyte or byte or short or ushort or int or uint or long or ulong
+            or float or double or decimal
+            or DateTime or DateTimeOffset or Guid or TimeSpan
+            ? value.ToString()!
+            : JsonConvert.SerializeObject(value);
+    }
+}

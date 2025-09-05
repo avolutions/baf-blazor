@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>Avolutions.Baf.Blazor</PackageId>
-    <Version>0.6.0</Version>
+    <Version>0.7.0</Version>
 
     <Title>Avolutions BAF Blazor</Title>
     <Company>Avolutions</Company>
@@ -29,7 +29,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avolutions.Baf.Core" Version="0.6.0" />
+    <PackageReference Include="Avolutions.Baf.Core" Version="0.7.0" />
     <PackageReference Include="CompareNETObjects" Version="4.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
@@ -59,6 +59,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FormResources.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Audit\Resources\AuditResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuditResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -86,6 +90,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>FormResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Audit\Resources\AuditResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AuditResources.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

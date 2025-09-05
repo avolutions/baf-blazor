@@ -1,22 +1,25 @@
-﻿@using Avolutions.Baf.Core.Identity.Models
+﻿@using Avolutions.Baf.Core.Identity.Caching
+@using Avolutions.Baf.Core.Identity.Models
 @using MudBlazor
+
+@inject IUserCache UserCache
 
 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
     <MudAvatar 
         Size="Size"
-        Style="@($"background-color:{AvatarColors.Background}; color:{AvatarColors.Text};")">
-        @User.GetInitials()
+        Style="@($"background-color:{UserInfo.AvatarColor.Background}; color:{UserInfo.AvatarColor.Text};")">
+        @UserInfo.Initials
     </MudAvatar>
 
     @if (WithName)
     {
-        <MudText Typo="Typo.body1">@User.GetName()</MudText>
+        <MudText Typo="Typo.body1">@UserInfo.Name</MudText>
     }
 </MudStack>
 
 @code {
     [Parameter]
-    public required User User { get; set; }
+    public required Guid UserId { get; set; }
     
     [Parameter]
     public required Size Size { get; set; } = Size.Large;
@@ -24,5 +27,10 @@
     [Parameter]
     public bool WithName { get; set; }
     
-    private (string Background, string Text) AvatarColors => User.GetAvatarColors();
+    private UserInfo UserInfo { get; set; } = null!;
+
+    protected override void OnParametersSet()
+    {
+        UserInfo = UserCache.Get(UserId);
+    }
 }

@@ -70,7 +70,13 @@
     
     protected override Task OnInitializedAsync()
     {
-        OriginalModel = Model.Adapt<T>();
+        var localConfig = new TypeAdapterConfig();
+
+        localConfig.Default
+            .PreserveReference(true)
+            .IgnoreNullValues(true);
+
+        OriginalModel = Model.Adapt<T>(localConfig);
         return Task.CompletedTask;
     }
 

@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="title" xml:space="preserve">
+        <value>{0} Änderungen</value>
+    </data>
+    <data name="newest-first" xml:space="preserve">
+        <value>Neueste zuerst</value>
+    </data>
+    <data name="oldest-first" xml:space="preserve">
+        <value>Älteste zuerst</value>
+    </data>
+    <data name="hide-details" xml:space="preserve">
+        <value>Details ausblenden</value>
+    </data>
+    <data name="show-details" xml:space="preserve">
+        <value>Details anzeigen</value>
+    </data>
+    <data name="old-value" xml:space="preserve">
+        <value>Alter Wert</value>
+    </data>
+    <data name="new-value" xml:space="preserve">
+        <value>Neuer Wert</value>
+    </data>
+    <data name="action.created" xml:space="preserve">
+        <value>{0} hat den Datensatz erstellt</value>
+    </data>
+    <data name="action.deleted" xml:space="preserve">
+        <value>{0} hat den Datensatz gelöscht</value>
+    </data>
+    <data name="action.unknown" xml:space="preserve">
+        <value>{0} hat eine unbekannte Änderung durchgeführt</value>
+    </data>
+    <data name="action.updated" xml:space="preserve">
+        <value>{0} hat den Datensatz geändert</value>
+    </data>
+    <data name="action.updated-fields" xml:space="preserve">
+        <value>{0} hat {1} geändert</value>
+    </data>
+    <data name="action.updated-remaining" xml:space="preserve">
+        <value>{0} hat {1} und {2} weitere geändert</value>
+    </data>
+    <data name="timestamp" xml:space="preserve">
+        <value>Am {0} um {1} Uhr</value>
+    </data>
+</root>
