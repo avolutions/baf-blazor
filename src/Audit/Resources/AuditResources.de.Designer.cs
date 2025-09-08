@@ -62,126 +62,126 @@ namespace Avolutions.Baf.Blazor.Audit.Resources {
         /// <summary>
         ///   Looks up a localized string similar to {0} hat den Datensatz erstellt.
         /// </summary>
-        internal static string action_created {
+        internal static string Action_Created {
             get {
-                return ResourceManager.GetString("action.created", resourceCulture);
+                return ResourceManager.GetString("Action.Created", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} hat den Datensatz gelöscht.
         /// </summary>
-        internal static string action_deleted {
+        internal static string Action_Deleted {
             get {
-                return ResourceManager.GetString("action.deleted", resourceCulture);
+                return ResourceManager.GetString("Action.Deleted", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} hat eine unbekannte Änderung durchgeführt.
         /// </summary>
-        internal static string action_unknown {
+        internal static string Action_Unknown {
             get {
-                return ResourceManager.GetString("action.unknown", resourceCulture);
+                return ResourceManager.GetString("Action.Unknown", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} hat den Datensatz geändert.
         /// </summary>
-        internal static string action_updated {
+        internal static string Action_Updated {
             get {
-                return ResourceManager.GetString("action.updated", resourceCulture);
+                return ResourceManager.GetString("Action.Updated", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} hat {1} geändert.
         /// </summary>
-        internal static string action_updated_fields {
+        internal static string Action_UpdatedFields {
             get {
-                return ResourceManager.GetString("action.updated-fields", resourceCulture);
+                return ResourceManager.GetString("Action.UpdatedFields", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} hat {1} und {2} weitere geändert.
         /// </summary>
-        internal static string action_updated_remaining {
+        internal static string Action_UpdatedRemaining {
             get {
-                return ResourceManager.GetString("action.updated-remaining", resourceCulture);
+                return ResourceManager.GetString("Action.UpdatedRemaining", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Details ausblenden.
         /// </summary>
-        internal static string hide_details {
+        internal static string HideDetails {
             get {
-                return ResourceManager.GetString("hide-details", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Neuer Wert.
-        /// </summary>
-        internal static string new_value {
-            get {
-                return ResourceManager.GetString("new-value", resourceCulture);
+                return ResourceManager.GetString("HideDetails", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Neueste zuerst.
         /// </summary>
-        internal static string newest_first {
+        internal static string NewestFirst {
             get {
-                return ResourceManager.GetString("newest-first", resourceCulture);
+                return ResourceManager.GetString("NewestFirst", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Alter Wert.
+        ///   Looks up a localized string similar to Neuer Wert.
         /// </summary>
-        internal static string old_value {
+        internal static string NewValue {
             get {
-                return ResourceManager.GetString("old-value", resourceCulture);
+                return ResourceManager.GetString("NewValue", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Älteste zuerst.
         /// </summary>
-        internal static string oldest_first {
+        internal static string OldestFirst {
             get {
-                return ResourceManager.GetString("oldest-first", resourceCulture);
+                return ResourceManager.GetString("OldestFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alter Wert.
+        /// </summary>
+        internal static string OldValue {
+            get {
+                return ResourceManager.GetString("OldValue", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Details anzeigen.
         /// </summary>
-        internal static string show_details {
+        internal static string ShowDetails {
             get {
-                return ResourceManager.GetString("show-details", resourceCulture);
+                return ResourceManager.GetString("ShowDetails", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Am {0} um {1} Uhr.
         /// </summary>
-        internal static string timestamp {
+        internal static string Timestamp {
             get {
-                return ResourceManager.GetString("timestamp", resourceCulture);
+                return ResourceManager.GetString("Timestamp", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} Änderungen.
         /// </summary>
-        internal static string title {
+        internal static string Title {
             get {
-                return ResourceManager.GetString("title", resourceCulture);
+                return ResourceManager.GetString("Title", resourceCulture);
             }
         }
     }

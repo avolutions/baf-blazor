@@ -26,7 +26,7 @@ public class ConfirmLeaveDialogService
     public async Task<DialogResult?> ShowAsync()
     {
         var dialog = await _dialogService.ShowAsync<ConfirmLeaveDialog>(
-            title: _localizer["confirm-leave-dialog.title"],
+            title: _localizer["ConfirmLeaveDialog.Title"],
             options: _options);
         
         return await dialog.Result;

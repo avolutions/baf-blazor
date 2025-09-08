@@ -62,18 +62,18 @@ namespace Avolutions.Baf.Blazor.Dialogs.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Bist du sicher, dass dieser Eintrag gelöscht werden soll? Diese Aktion kann nicht rückgängig gemacht werden..
         /// </summary>
-        internal static string delete_dialog_content {
+        internal static string DeleteDialog_Content {
             get {
-                return ResourceManager.GetString("delete-dialog.content", resourceCulture);
+                return ResourceManager.GetString("DeleteDialog.Content", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Löschen bestätigen.
         /// </summary>
-        internal static string delete_dialog_title {
+        internal static string DeleteDialog_Title {
             get {
-                return ResourceManager.GetString("delete-dialog.title", resourceCulture);
+                return ResourceManager.GetString("DeleteDialog.Title", resourceCulture);
             }
         }
     }
