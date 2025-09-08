@@ -11,24 +11,24 @@ public class UserFormValidator : AbstractValidator<UserFormModel>
     {
         RuleFor(x => x.Firstname)
             .NotEmpty()
-            .WithName(localizer["field.firstname"]);
+            .WithName(localizer["Field.Firstname"]);
         
         RuleFor(x => x.Lastname)
             .NotEmpty()
-            .WithName(localizer["field.lastname"]);
+            .WithName(localizer["Field.Lastname"]);
         
         RuleFor(x => x.UserName)
             .NotEmpty()
-            .WithName(localizer["field.username"]);
+            .WithName(localizer["Field.Username"]);
         
         RuleFor(x => x.Password)
             .NotEmpty()
-            .WithName(localizer["field.password"]);
+            .WithName(localizer["Field.Password"]);
         
         RuleFor(x => x.PasswordConfirm)
             .NotEmpty()
-            .WithName(localizer["field.password-confirm"])
+            .WithName(localizer["Field.PasswordConfirm"])
             .Equal(x => x.Password)
-            .WithMessage(localizer["validation.password-equal"]);
+            .WithMessage(localizer["Validation.PasswordEqual"]);
     }
 }

@@ -27,11 +27,11 @@ public class DeleteDialogService
         
         var parameters = new DialogParameters
         {
-            ["Content"] = content ?? _localizer["delete-dialog.content"]
+            ["Content"] = content ?? _localizer["DeleteDialog.Content"]
         };
         
         var dialog = await _dialogService.ShowAsync<DeleteDialog>(
-            title: title ?? _localizer["delete-dialog.title"],
+            title: title ?? _localizer["DeleteDialog.Title"],
             options: options,
             parameters: parameters);
         return await dialog.Result;

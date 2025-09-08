@@ -62,18 +62,18 @@ namespace Avolutions.Baf.Blazor.Setup.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Benutzer erstellen.
         /// </summary>
-        internal static string create_user {
+        internal static string CreateUser {
             get {
-                return ResourceManager.GetString("create-user", resourceCulture);
+                return ResourceManager.GetString("CreateUser", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Grundkonfiguration.
         /// </summary>
-        internal static string title {
+        internal static string Title {
             get {
-                return ResourceManager.GetString("title", resourceCulture);
+                return ResourceManager.GetString("Title", resourceCulture);
             }
         }
     }

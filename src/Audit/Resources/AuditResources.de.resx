@@ -18,46 +18,46 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="title" xml:space="preserve">
-        <value>{0} Änderungen</value>
-    </data>
-    <data name="newest-first" xml:space="preserve">
+    <data name="NewestFirst" xml:space="preserve">
         <value>Neueste zuerst</value>
     </data>
-    <data name="oldest-first" xml:space="preserve">
+    <data name="OldestFirst" xml:space="preserve">
         <value>Älteste zuerst</value>
     </data>
-    <data name="hide-details" xml:space="preserve">
+    <data name="HideDetails" xml:space="preserve">
         <value>Details ausblenden</value>
     </data>
-    <data name="show-details" xml:space="preserve">
+    <data name="ShowDetails" xml:space="preserve">
         <value>Details anzeigen</value>
     </data>
-    <data name="old-value" xml:space="preserve">
+    <data name="OldValue" xml:space="preserve">
         <value>Alter Wert</value>
     </data>
-    <data name="new-value" xml:space="preserve">
+    <data name="NewValue" xml:space="preserve">
         <value>Neuer Wert</value>
     </data>
-    <data name="action.created" xml:space="preserve">
+    <data name="Action.Created" xml:space="preserve">
         <value>{0} hat den Datensatz erstellt</value>
     </data>
-    <data name="action.deleted" xml:space="preserve">
+    <data name="Action.Deleted" xml:space="preserve">
         <value>{0} hat den Datensatz gelöscht</value>
     </data>
-    <data name="action.unknown" xml:space="preserve">
+    <data name="Action.Unknown" xml:space="preserve">
         <value>{0} hat eine unbekannte Änderung durchgeführt</value>
     </data>
-    <data name="action.updated" xml:space="preserve">
+    <data name="Action.Updated" xml:space="preserve">
         <value>{0} hat den Datensatz geändert</value>
     </data>
-    <data name="action.updated-fields" xml:space="preserve">
+    <data name="Action.UpdatedFields" xml:space="preserve">
         <value>{0} hat {1} geändert</value>
     </data>
-    <data name="action.updated-remaining" xml:space="preserve">
+    <data name="Action.UpdatedRemaining" xml:space="preserve">
         <value>{0} hat {1} und {2} weitere geändert</value>
     </data>
-    <data name="timestamp" xml:space="preserve">
+    <data name="Timestamp" xml:space="preserve">
         <value>Am {0} um {1} Uhr</value>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>{0} Änderungen</value>
     </data>
 </root>

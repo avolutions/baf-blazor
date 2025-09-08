@@ -22,12 +22,12 @@
 @inject IStringLocalizer<SetupResources> L
 @inject IStringLocalizer<IdentityResources> LUser
 
-<PageTitle>@L["title"]</PageTitle>
+<PageTitle>@L["Title"]</PageTitle>
 
 <MudText Class="py-5" Typo="Typo.h4">@L["title"]</MudText>
 <MudPaper>
     <MudStepper OnPreviewInteraction="OnPreviewInteraction">
-        <MudStep Title=@L["create-user"] Class="py-2">
+        <MudStep Title=@L["CreateUser"] Class="py-2">
             <FormComponent T="UserFormModel"
                            @ref="_form"
                            Model="_userForm"
@@ -39,7 +39,7 @@
                             <MudTextField
                                 @bind-Value="model.Firstname"
                                 For="@(() => model.Firstname)"
-                                Label=@LUser["field.firstname"]
+                                Label=@LUser["Field.Firstname"]
                                 Required="true"
                                 Variant="Variant.Outlined"
                             />
@@ -48,7 +48,7 @@
                             <MudTextField
                                 @bind-Value="model.Lastname"
                                 For="@(() => model.Lastname)"
-                                Label=@LUser["field.lastname"]
+                                Label=@LUser["Field.Lastname"]
                                 Required="true"
                                 Variant="Variant.Outlined"
                             />
@@ -57,7 +57,7 @@
                             <MudTextField
                                 @bind-Value="model.UserName"
                                 For="@(() => model.UserName)"
-                                Label=@LUser["field.username"]
+                                Label=@LUser["Field.Username"]
                                 Required="true"
                                 Variant="Variant.Outlined"
                             />
@@ -66,7 +66,7 @@
                             <PasswordField 
                                 @bind-Value="model.Password"
                                 For="@(() => model.Password)"
-                                Label=@LUser["field.password"]
+                                Label=@LUser["Field.Password"]
                                 Required="true"
                                 Variant="Variant.Outlined" />
                         </MudItem>
@@ -74,7 +74,7 @@
                             <PasswordField
                                 @bind-Value="model.PasswordConfirm"
                                 For="@(() => model.PasswordConfirm)"
-                                Label=@LUser["field.password-confirm"]
+                                Label=@LUser["Field.PasswordConfirm"]
                                 Required="true"
                                 Variant="Variant.Outlined" />
                         </MudItem>

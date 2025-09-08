@@ -62,9 +62,9 @@ namespace Avolutions.Baf.Blazor.DataTable.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Liste durchsuchen....
         /// </summary>
-        internal static string search_placeholder {
+        internal static string SearchPlaceholder {
             get {
-                return ResourceManager.GetString("search-placeholder", resourceCulture);
+                return ResourceManager.GetString("SearchPlaceholder", resourceCulture);
             }
         }
     }

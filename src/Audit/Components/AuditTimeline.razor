@@ -11,12 +11,12 @@
 
  <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
     <MudText Typo="Typo.h6">
-        @L["title", Items.Count]
+        @L["Title", Items.Count]
     </MudText>
     <MudElement>
         <MudSelect T="SortOrder" Value="@_sort" ValueChanged="OnSortChanged" Variant="Variant.Outlined">
-            <MudSelectItem Value="SortOrder.NewestFirst">@L["newest-first"]</MudSelectItem>
-            <MudSelectItem Value="SortOrder.OldestFirst">@L["oldest-first"]t</MudSelectItem>
+            <MudSelectItem Value="SortOrder.NewestFirst">@L["NewestFirst"]</MudSelectItem>
+            <MudSelectItem Value="SortOrder.OldestFirst">@L["OldestFirst"]t</MudSelectItem>
         </MudSelect>
     </MudElement>
 </MudStack>
@@ -50,7 +50,7 @@
                             <MudText Typo="Typo.body2">@GetTracking(item.CreatedAt)</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
-                            <MudTooltip Text="@(IsOpen(item.Id) ? L["hide-details"] : L["show-details"])">
+                            <MudTooltip Text="@(IsOpen(item.Id) ? L["HideDetails"] : L["ShowDetails"])">
                                 <MudIconButton
                                     Icon="@(IsOpen(item.Id) ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
                                     Color="Color.Default"
@@ -65,8 +65,8 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 20%"></th>
-                                        <th style="width: 40%">@L["old-value"]</th>
-                                        <th style="width: 40%">@L["new-value"]</th>
+                                        <th style="width: 40%">@L["OldValue"]</th>
+                                        <th style="width: 40%">@L["NewValue"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -132,17 +132,17 @@
     private string GetTitle(AuditAction action, string userName, IList<string>? changedFields = null)
         => action switch
         {
-            AuditAction.Created => L["action.created", userName],
-            AuditAction.Deleted => L["action.deleted", userName],
+            AuditAction.Created => L["Action.Created", userName],
+            AuditAction.Deleted => L["Action.Deleted", userName],
             AuditAction.Updated => BuildUpdatedTitle(userName, changedFields),
-            _ => L["action.unknown", userName]
+            _ => L["Action.Unknown", userName]
         };
     
     private string BuildUpdatedTitle(string userName, IList<string>? changedFields = null)
     {
         if (changedFields == null || changedFields.Count == 0)
         {
-            return L["action.updated", userName];
+            return L["Action.Updated", userName];
         }
         
         // Translate field names
@@ -156,17 +156,17 @@
         {
             fieldList = string.Join(", ", fields.Select(f => $"\"{f}\""));
             
-            return L["action.updated-fields", userName, fieldList];
+            return L["Action.UpdatedFields", userName, fieldList];
         }
 
         fieldList = string.Join(", ", fields.Take(max).Select(f => $"\"{f}\""));
         var remaining = fields.Count - max;
-        return L["action.updated-remaining", userName, fieldList, remaining];
+        return L["Action.UpdatedRemaining", userName, fieldList, remaining];
     }
     
     private string GetTracking(DateTime timestamp)
     {
-        return L["timestamp", $"{timestamp:dd. MMM yyyy}", $"{timestamp:HH:mm:ss}"];
+        return L["Timestamp", $"{timestamp:dd. MMM yyyy}", $"{timestamp:HH:mm:ss}"];
     }
     
     private static IDictionary<string, object?> ToDict(string? json)

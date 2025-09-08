@@ -62,27 +62,27 @@ namespace Avolutions.Baf.Blazor.Forms.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Du hast ungespeicherte Änderungen. Wenn du die Seite verlässt, werden diese Änderungen verworfen..
         /// </summary>
-        internal static string confirm_leave_dialog_content {
+        internal static string ConfirmLeaveDialog_Content {
             get {
-                return ResourceManager.GetString("confirm-leave-dialog.content", resourceCulture);
+                return ResourceManager.GetString("ConfirmLeaveDialog.Content", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Möchtest du die Seite wirklich verlassen?.
         /// </summary>
-        internal static string confirm_leave_dialog_question {
+        internal static string ConfirmLeaveDialog_Question {
             get {
-                return ResourceManager.GetString("confirm-leave-dialog.question", resourceCulture);
+                return ResourceManager.GetString("ConfirmLeaveDialog.Question", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Ungespeichterte Änderungen.
         /// </summary>
-        internal static string confirm_leave_dialog_title {
+        internal static string ConfirmLeaveDialog_Title {
             get {
-                return ResourceManager.GetString("confirm-leave-dialog.title", resourceCulture);
+                return ResourceManager.GetString("ConfirmLeaveDialog.Title", resourceCulture);
             }
         }
     }

@@ -62,9 +62,9 @@ namespace Avolutions.Baf.Blazor.EntryNotFound.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Der angeforderte Datensatz konnte nicht gefunden werden..
         /// </summary>
-        internal static string title {
+        internal static string Title {
             get {
-                return ResourceManager.GetString("title", resourceCulture);
+                return ResourceManager.GetString("Title", resourceCulture);
             }
         }
     }

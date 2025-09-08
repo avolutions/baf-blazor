@@ -18,13 +18,13 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="confirm-leave-dialog.content" xml:space="preserve">
+    <data name="ConfirmLeaveDialog.Content" xml:space="preserve">
         <value>Du hast ungespeicherte Änderungen. Wenn du die Seite verlässt, werden diese Änderungen verworfen.</value>
     </data>
-    <data name="confirm-leave-dialog.question" xml:space="preserve">
+    <data name="ConfirmLeaveDialog.Question" xml:space="preserve">
         <value>Möchtest du die Seite wirklich verlassen?</value>
     </data>
-    <data name="confirm-leave-dialog.title" xml:space="preserve">
+    <data name="ConfirmLeaveDialog.Title" xml:space="preserve">
         <value>Ungespeichterte Änderungen</value>
     </data>
 </root>
