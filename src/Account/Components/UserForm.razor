@@ -1,0 +1,98 @@
+﻿@using Avolutions.Baf.Blazor.Account.Models.Forms
+@using Avolutions.Baf.Blazor.Forms.Components
+@using Avolutions.Baf.Blazor.Inputs.Components
+@using Avolutions.Baf.Core.Identity.Models
+@using Avolutions.Baf.Core.Identity.Resources
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject RoleManager<Role> RoleManager
+@inject IStringLocalizer<IdentityResources> L
+
+<FormComponent T="UserFormModel"
+               Model="Model"
+               OnCancel="@OnCancel"
+               OnSubmit="@OnSubmit">
+    <ChildContent Context="model">
+        <MudGrid>
+            <MudItem xs="6">
+                <MudTextField
+                    @bind-Value="model.Firstname"
+                    For="@(() => model.Firstname)"
+                    Label="@L["field.firstname"]"
+                    Required="true"
+                    Variant="Variant.Outlined"
+                />
+            </MudItem>
+            <MudItem xs="6">
+                <MudTextField
+                    @bind-Value="model.Lastname"
+                    For="@(() => model.Lastname)"
+                    Label="@L["field.lastname"]"
+                    Required="true"
+                    Variant="Variant.Outlined"
+                />
+            </MudItem>
+            <MudItem xs="6">
+                <MudTextField
+                    @bind-Value="model.UserName"
+                    For="@(() => model.UserName)"
+                    Label="@L["field.username"]"
+                    Required="true"
+                    Variant="Variant.Outlined"
+                />
+            </MudItem>
+            @if (ShowRoleSelection)
+            {
+                <MudItem xs="6">
+                    <MudSelect T="string"
+                               @bind-Value="model.RoleName"
+                               For="@(() => model.RoleName)"
+                               Label="@L["field.role"]"
+                               Required="true"
+                               Variant="Variant.Outlined">
+                        @foreach (var role in _availableRoles)
+                        {
+                            <MudSelectItem Value="@role">@L[$"role.{role}"]</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            }
+            @if (ShowPasswordFields)
+            {
+                <MudItem xs="6">
+                    <PasswordField 
+                        @bind-Value="model.Password"
+                        For="@(() => model.Password)"
+                        Label="@L["field.password"]"
+                        Required="true"
+                        Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <PasswordField
+                        @bind-Value="model.PasswordConfirm"
+                        For="@(() => model.PasswordConfirm)"
+                        Label="@L["field.password-confirm"]"
+                        Required="true"
+                        Variant="Variant.Outlined" />
+                </MudItem>
+            }
+        </MudGrid>
+    </ChildContent>
+</FormComponent>
+
+@code {
+    [Parameter, EditorRequired] public required UserFormModel Model { get; set; }
+    [Parameter] public EventCallback OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public bool ShowPasswordFields { get; set; } = true;
+    [Parameter] public bool ShowRoleSelection { get; set; } = true;
+    
+    private List<string> _availableRoles = [];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _availableRoles = await Task.FromResult(RoleManager.Roles.Select(r => r.Name!).ToList());
+    }
+}

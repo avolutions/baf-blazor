@@ -1,4 +1,4 @@
-﻿using Avolutions.Baf.Blazor.Account.Models;
+﻿using Avolutions.Baf.Blazor.Account.Models.Forms;
 using Avolutions.Baf.Core.Identity.Resources;
 using FluentValidation;
 using Microsoft.Extensions.Localization;

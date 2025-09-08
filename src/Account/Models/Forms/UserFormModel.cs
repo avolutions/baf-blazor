@@ -1,6 +1,6 @@
 ﻿using Avolutions.Baf.Core.Identity.Models;
 
-namespace Avolutions.Baf.Blazor.Account.Models;
+namespace Avolutions.Baf.Blazor.Account.Models.Forms;
 
 public class UserFormModel
 {

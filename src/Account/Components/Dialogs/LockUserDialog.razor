@@ -1,0 +1,48 @@
+﻿@using Avolutions.Baf.Blazor.Account.Resources
+@using Avolutions.Baf.Core.Identity.Models
+@using Avolutions.Baf.Core.Identity.Services
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject UserService UserService
+@inject IStringLocalizer<AccountResources> L
+@inject IStringLocalizer<SharedResources> LShared
+
+<MudDialog ContentStyle="width: 500px">
+    <DialogContent>
+        <MudText Typo="Typo.body1">
+            @if (User.IsLocked())
+            {
+                @L["LockUserDialog.ContentUnlock", User.GetName()]
+            }
+            else
+            {
+                @L["LockUserDialog.ContentLock", User.GetName()]
+            }
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="@Cancel">@LShared["button.no"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@Confirm">@LShared["button.yes"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; } = null!;
+    
+    [Parameter]
+    public User User { get; set; } = null!;
+
+    private async Task Confirm()
+    {
+        var success = await UserService.ToggleLockoutAsync(User);
+        if (success)
+        {
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
