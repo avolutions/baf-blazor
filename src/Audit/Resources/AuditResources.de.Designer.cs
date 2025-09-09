@@ -114,11 +114,29 @@ namespace Avolutions.Baf.Blazor.Audit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Erstellt.
+        /// </summary>
+        internal static string Created {
+            get {
+                return ResourceManager.GetString("Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Details ausblenden.
         /// </summary>
         internal static string HideDetails {
             get {
                 return ResourceManager.GetString("HideDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zuletzt geändert.
+        /// </summary>
+        internal static string LastModified {
+            get {
+                return ResourceManager.GetString("LastModified", resourceCulture);
             }
         }
         

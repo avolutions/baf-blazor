@@ -166,6 +166,7 @@
     
     private string GetTracking(DateTime timestamp)
     {
+        timestamp = timestamp.ToLocalTime();
         return L["Timestamp", $"{timestamp:dd. MMM yyyy}", $"{timestamp:HH:mm:ss}"];
     }
     

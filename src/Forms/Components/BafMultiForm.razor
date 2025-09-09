@@ -1,0 +1,142 @@
+﻿@typeparam T
+
+@using Avolutions.Baf.Blazor.Forms.Services
+@using Avolutions.Baf.Core.Resources
+@using KellermanSoftware.CompareNetObjects
+@using Mapster
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject ConfirmLeaveDialogService ConfirmLeaveDialogService
+@inject IStringLocalizer<SharedResources> L
+
+<NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync"/>
+
+<MudForm @ref="_form">
+    @foreach (var model in Models)
+    {
+        <FormComponent Model="model" IsSubForm="true">
+            @ChildContent(model)
+        </FormComponent>
+    }
+</MudForm>
+
+@if (_errors.Count > 0)
+{
+    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mt-2">
+        @foreach (var error in _errors)
+        {
+            <div>@error</div>
+        }
+    </MudAlert>
+}
+
+<MudStack Row Spacing="5" Class="mt-4" Justify="Justify.FlexEnd">
+    <MudButton
+        Color="Color.Default"
+        OnClick="@Cancel"
+        Variant="Variant.Filled">
+        @L["Button.Cancel"]
+    </MudButton>
+    <MudButton 
+        Color="Color.Primary"
+        OnClick="@(async () => await Submit())"
+        Variant="Variant.Filled">
+        @L["Button.Save"]
+    </MudButton>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public required List<T> Models { get; set; }
+    [Parameter, EditorRequired] public required RenderFragment<T> ChildContent { get; set; }
+
+    [Parameter] public EventCallback OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    
+    private MudForm? _form;
+    private readonly List<string> _errors = [];
+    
+    private bool _canNavigate;
+    private List<T>? _originalModels;
+    private readonly CompareLogic _comparer = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var localConfig = new TypeAdapterConfig();
+
+        localConfig.Default
+            .PreserveReference(true)
+            .IgnoreNullValues(true);
+        
+        if (Models.Count > 0 && _originalModels == null)
+        {
+            _originalModels = Models.Select(x => x.Adapt<T>(localConfig)).ToList();
+        }
+        
+        await base.OnParametersSetAsync();
+    }
+    
+    private async Task Submit()
+    {
+        _errors.Clear();
+
+        if (_form is not null)
+        {
+            await _form.Validate();
+            if (!_form.IsValid)
+            {
+                return;
+            }
+        }
+
+        if (_errors.Count == 0 && OnSubmit.HasDelegate)
+        {
+            try
+            {
+                _canNavigate = true;
+                await OnSubmit.InvokeAsync();
+            }
+            catch (Exception ex)
+            {
+                _errors.AddRange(ex.Message.Split(Environment.NewLine));
+            }
+        }
+    }
+
+    private async Task Cancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+    
+    private async Task<bool> ConfirmLeaveAsync(LocationChangingContext context)
+    {
+        if (_canNavigate || _originalModels == null)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < Models.Count; i++)
+        {
+            var current = Models[i];
+            var original = i < _originalModels.Count ? _originalModels[i] : default;
+
+            if (!_comparer.Compare(current, original).AreEqual)
+            {
+                var result = await ConfirmLeaveDialogService.ShowAsync();
+                if (result != null && !result.Canceled)
+                {
+                    return true;
+                }
+
+                context.PreventNavigation();
+                return false;
+            }
+        }
+
+        return true;
+    }
+}

@@ -1,6 +1,6 @@
 ﻿using Avolutions.Baf.Core.Settings.Attributes;
 
-namespace Avolutions.Baf.Blazor.Theme;
+namespace Avolutions.Baf.Blazor.Theme.Settings;
 
 [Settings("Theme")]
 public class ThemeSettings

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>Avolutions.Baf.Blazor</PackageId>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
 
     <Title>Avolutions BAF Blazor</Title>
     <Company>Avolutions</Company>
@@ -29,7 +29,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avolutions.Baf.Core" Version="0.8.0" />
+    <PackageReference Include="Avolutions.Baf.Core" Version="0.9.0" />
     <PackageReference Include="CompareNETObjects" Version="4.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
@@ -66,6 +66,14 @@
     <EmbeddedResource Update="Account\Resources\AccountResources.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AccountResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Theme\Resources\ThemeResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ThemeResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Settings\Resources\SettingResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SettingResources.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
@@ -104,6 +112,16 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>AccountResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Theme\Resources\ThemeResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ThemeResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Settings\Resources\SettingResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SettingResources.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

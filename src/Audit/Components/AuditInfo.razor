@@ -1,0 +1,59 @@
+﻿@using Avolutions.Baf.Blazor.Audit.Resources
+@using Avolutions.Baf.Core.Entity.Abstractions
+@using Avolutions.Baf.Core.Identity.Caching
+@using Avolutions.Baf.Core.Identity.Models
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<AuditResources> L
+@inject IUserCache UserCache
+
+<MudStack Spacing="4">
+    <MudStack Spacing="1">
+        <MudText Typo="Typo.subtitle2">@L["Created"]:</MudText>
+        <MudCardHeader Class="pa-0">
+            <CardHeaderAvatar>
+                <MudAvatar Style="@($"background-color:{_createdUserInfo.AvatarColor.Background}; color:{_createdUserInfo.AvatarColor.Text};")">
+                    @_createdUserInfo.Initials
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@_createdUserInfo.Name</MudText>
+                <MudText Typo="Typo.body2">@FormatDate(Entity.CreatedAt)</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+    </MudStack>
+    <MudStack Spacing="1">
+        <MudText Typo="Typo.subtitle2">@L["LastModified"]:</MudText>
+        <MudCardHeader Class="pa-0">
+            <CardHeaderAvatar>
+                <MudAvatar Style="@($"background-color:{_modifiedUserInfo.AvatarColor.Background}; color:{_modifiedUserInfo.AvatarColor.Text};")">
+                    @_modifiedUserInfo.Initials
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@_modifiedUserInfo.Name</MudText>
+                <MudText Typo="Typo.body2">@FormatDate(Entity.ModifiedAt)</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public required ITrackable Entity { get; set; }
+
+    private UserInfo _createdUserInfo = null!;
+    private UserInfo _modifiedUserInfo = null!;
+    
+    protected override void OnInitialized()
+    {
+        _createdUserInfo = UserCache.Get(Entity.CreatedBy);
+        _modifiedUserInfo = UserCache.Get(Entity.ModifiedBy);
+    }
+    
+    private string FormatDate(DateTime timestamp)
+    {
+        timestamp = timestamp.ToLocalTime();
+        return L["Timestamp", $"{timestamp:dd. MMM yyyy}", $"{timestamp:HH:mm}"];
+    }
+}
