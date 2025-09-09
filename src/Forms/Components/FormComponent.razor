@@ -11,7 +11,7 @@
 @using MudBlazor
 @using Severity = MudBlazor.Severity
 
-@inject ConfirmLeaveDialogService DialogService
+@inject ConfirmLeaveDialogService ConfirmLeaveDialogService
 @inject IStringLocalizer<SharedResources> L
 @inject IValidator<T> Validator
 
@@ -130,7 +130,7 @@
             return true;
         }
 
-        var result = await DialogService.ShowAsync();
+        var result = await ConfirmLeaveDialogService.ShowAsync();
         if (result != null && !result.Canceled)
         {
             return true;
