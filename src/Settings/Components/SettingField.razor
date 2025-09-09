@@ -1,0 +1,30 @@
+﻿@using Avolutions.Baf.Blazor.Settings.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<SettingResources> L
+
+<MudItem xs="4">
+    <MudText><strong>@Title</strong></MudText>
+    <MudText Typo="Typo.caption" Class="mud-text-secondary">@Description</MudText>
+</MudItem>
+<MudItem xs="8">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        @ChildContent
+        @if (OnReset.HasDelegate)
+        {
+            <MudTooltip Text="@L["Reset"]">
+                <MudIconButton Icon="@Icons.Material.Filled.Replay"
+                               Color="Color.Default"
+                               OnClick="@OnReset"/>
+            </MudTooltip>
+        }
+    </MudStack>
+</MudItem>
+
+@code {
+    [Parameter, EditorRequired] public required string Title { get; set; }
+    [Parameter, EditorRequired] public required string Description { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback OnReset { get; set; }
+}

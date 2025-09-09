@@ -1,0 +1,48 @@
+﻿@typeparam T where T : class, new()
+
+@using Avolutions.Baf.Blazor.Forms.Components
+@using Avolutions.Baf.Blazor.Settings.Resources
+@using Avolutions.Baf.Blazor.Snackbar.Services
+@using Avolutions.Baf.Core.Settings.Abstractions
+@using Mapster
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject SnackbarNotificationService SnackbarNotificationService
+@inject NavigationManager NavigationManager
+@inject ISettings<T> Settings
+@inject IStringLocalizer<SettingResources> L
+
+<FormComponent T="T"
+               Model="ClonedModel"
+               OnSubmit="@Submit"
+               OnCancel="@Cancel">
+    <MudGrid Spacing="10">
+        @ChildContent(ClonedModel)
+    </MudGrid>
+</FormComponent>
+
+@code {
+    [Parameter] public RenderFragment<T> ChildContent { get; set; } = null!;
+    
+    private T Model { get; set; } = default!;
+    private T ClonedModel { get; set; } = default!;
+    
+    protected override void OnInitialized()
+    {
+        Model = Settings.Value;
+        // Clone the settings to avoid modifying the original instance
+        ClonedModel = Model.Adapt<T>();
+    }
+    
+    private async Task Submit()
+    {
+        await Settings.SaveAsync(ClonedModel);
+        SnackbarNotificationService.ShowSuccess(L["UpdatedSuccessfully"]);
+    }
+    
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+}
