@@ -67,6 +67,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AccountResources.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Theme\Resources\ThemeResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ThemeResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -104,6 +108,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>AccountResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Theme\Resources\ThemeResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ThemeResources.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

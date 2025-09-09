@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using Avolutions.Baf.Blazor.Theme.Settings;
+using MudBlazor;
 
 namespace Avolutions.Baf.Blazor.Theme;
 
