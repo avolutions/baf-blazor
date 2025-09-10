@@ -4,6 +4,7 @@
 @using Avolutions.Baf.Core.SystemSettings
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
+@using Avolutions.Baf.Blazor.Search.Components
 
 @inherits LayoutComponentBase
 
@@ -24,7 +25,7 @@
             @SystemSettings.Value.ApplicationTitle
         </MudText>
         <MudSpacer />
-            
+        <GlobalSearch />
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
