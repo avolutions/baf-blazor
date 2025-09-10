@@ -1,0 +1,60 @@
+﻿@using System.Globalization
+@using MudBlazor
+
+<div class="baf-map" style="height:@Height;">
+    @if (!string.IsNullOrWhiteSpace(MapSrc))
+    {
+        <iframe
+            title="Google Map"
+            src="@MapSrc"
+            loading="lazy"
+            allowfullscreen="@AllowFullScreen"
+            referrerpolicy="no-referrer-when-downgrade"
+            onload="this.closest('.baf-map').classList.add('is-loaded')">
+        </iframe>
+    }
+    
+    <div class="baf-map-loader" aria-live="polite" aria-busy="true">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+    </div>
+</div>
+
+@code {
+    [Parameter] public decimal? Latitude { get; set; }
+    [Parameter] public decimal? Longitude { get; set; }
+    [Parameter] public string? Query { get; set; }
+
+    /// <summary>Zoom level (1–21+). Default 15.</summary>
+    [Parameter] public int Zoom { get; set; } = 15;
+
+    /// <summary>Component height (e.g., "360px", "50vh").</summary>
+    [Parameter] public string Height { get; set; } = "360px";
+
+    /// <summary>Allow fullscreen toggle in the iframe.</summary>
+    [Parameter] public bool AllowFullScreen { get; set; } = true;
+
+    private string? MapSrc => BuildMapSrc();
+
+    private string? BuildMapSrc()
+    {
+        if (HasValidCoords())
+        {
+            var lat = Latitude!.Value.ToString(CultureInfo.InvariantCulture);
+            var lng = Longitude!.Value.ToString(CultureInfo.InvariantCulture);
+            
+            return $"https://www.google.com/maps?q={lat},{lng}&z={Zoom}&output=embed";
+        }
+
+        if (!string.IsNullOrWhiteSpace(Query))
+        {
+            return $"https://www.google.com/maps?q={Uri.EscapeDataString(Query)}&z={Zoom}&output=embed";
+        }
+
+        return null;
+    }
+
+    private bool HasValidCoords()
+        => Latitude.HasValue && Longitude.HasValue
+                             && Latitude.Value is >= -90 and <= 90
+                             && Longitude.Value is >= -180 and <= 180;
+}
