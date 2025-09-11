@@ -1,0 +1,216 @@
+﻿@using Avolutions.Baf.Blazor.Import.Resources
+@using Avolutions.Baf.Blazor.Snackbar.Services
+@using Avolutions.Baf.Core.Import.Abstractions
+@using Avolutions.Baf.Core.Import.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IEnumerable<IFileImportService> ImportServices
+@inject SnackbarNotificationService SnackbarNotificationService
+@inject IStringLocalizer<ImportResources> L
+
+<MudStack Spacing="5">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudSelect T="IFileImportService"
+                   Label=@L["ImportType"] 
+                   @bind-Value="_selectedImporter"
+                   Required="true"
+                   Variant="Variant.Outlined">
+            @foreach (var importService in ImportServices)
+            {
+                <MudSelectItem Value="importService">@importService.Type</MudSelectItem>
+            }
+        </MudSelect>
+        <MudFileUpload T="IBrowserFile"
+                       Disabled="@(_selectedImporter == null)"
+                       MaximumFileCount="1"
+                       Accept="@_selectedImporter?.FileExtension"
+                       FilesChanged="UploadFiles!">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.CloudUpload">
+                    @L["Button.SelectFile"]
+                </MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+    </MudStack>
+
+    <MudList T="string" ReadOnly="true">
+        @if (_selectedImporter is not null)
+        {
+            <MudListItem Text="@_selectedImporter.Description" Icon="@Icons.Material.Outlined.Info" />
+        }
+        else
+        {
+            <MudListItem Text="@L["NoImportType"]" Icon="@Icons.Material.Outlined.Info" IconColor="Color.Error" Class="mud-error-text"/>
+        }
+        @if (_selectedFile is not null)
+        {
+            <MudListItem Text="@_selectedFile.Name" Icon="@Icons.Material.Outlined.AttachFile"/>
+        }
+        else
+        {
+            <MudListItem Text="@L["NoSelectedFile"]" Icon="@Icons.Material.Outlined.AttachFile" IconColor="Color.Error" Class="mud-error-text"/>
+        }
+    </MudList>
+
+    <MudStack Spacing="0">
+        <MudText Typo="Typo.subtitle1">@L["ExistingEntries"]:</MudText>
+        <MudRadioGroup T="ExistingRecordHandling" @bind-Value="_existingHandling">
+            <MudRadio T="ExistingRecordHandling" Value="ExistingRecordHandling.Ignore" Label="@L["Ignore"]"/>
+            <MudRadio T="ExistingRecordHandling" Value="ExistingRecordHandling.Update" Label="@L["Update"]"/>
+        </MudRadioGroup>
+    </MudStack>
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               OnClick="@StartImport"
+               Disabled="_selectedImporter == null || _selectedFile == null">
+        @L["Button.StartImport"]
+    </MudButton>
+
+    @if (_isImporting)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-4"/>
+    }
+
+    @if (_importResult is not null)
+    {
+        <MudText Typo="Typo.h6">@L["Summary"]</MudText>
+        @if (_summary is not null)
+        {
+            <MudAlert Severity="@_summary.Severity" Dense="true">
+                @_summary.Message
+            </MudAlert>
+        }
+        <MudSimpleTable Dense="true">
+            <tbody>
+                <tr>
+                    <td>@L["RecordsCreated"]</td>
+                    <td Style="text-align:right; font-weight: bold">@_importResult.RecordsCreated</td>
+                </tr>
+                <tr>
+                    <td>@L["RecordsUpdated"]</td>
+                    <td Style="text-align:right; font-weight: bold">@_importResult.RecordsUpdated</td>
+                </tr>
+                <tr>
+                    <td>@L["RecordsIgnored"]</td>
+                    <td Style="text-align:right; font-weight: bold">@_importResult.RecordsIgnored</td>
+                </tr>
+                <tr style="border-top: 2px solid;">
+                    <td style="font-weight: bold">@L["RecordsProcessed"]</td>
+                    <td Style="text-align:right; font-weight: bold">@_importResult.RecordsProcessed</td>
+                </tr>
+            </tbody>
+        </MudSimpleTable>
+        
+        @if (_importResult.Errors.Any())
+        {
+            <MudText Typo="Typo.h6">@L["Errors"]</MudText>
+            <MudExpansionPanels>
+                @foreach (var error in _importResult.Errors)
+                {
+                    <MudExpansionPanel Text="@(error.Row == -1 ? L["Error.General"] : L["Error.Row", error.Row.ToString()])" Class="mud-error-text">
+                        <MudAlert Severity="Severity.Error" Dense="true">
+                            @error.Message
+                        </MudAlert>
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+        }
+    }
+</MudStack>
+
+@code {
+    private IFileImportService? _selectedImporter;
+    private IBrowserFile? _selectedFile;
+    private ImportResult? _importResult;
+    private ExistingRecordHandling _existingHandling = ExistingRecordHandling.Ignore;
+    private bool _isImporting;
+    private ImportResultSummary? _summary;
+
+    private ImportResultSummary GetResultSummary(ImportResult result)
+    {
+        if (!result.Success && result.RecordsProcessed == 0)
+        {
+            return new ImportResultSummary()
+            {
+                Severity = Severity.Error,
+                Message = L["Result.Failed"]
+            };
+        }
+
+        if (!result.Success && result.RecordsProcessed > 0)
+        {
+            return new ImportResultSummary()
+            {
+                Severity = Severity.Warning,
+                Message = L["Result.Warning"]
+            };
+        }
+
+        if (result.Success && result.RecordsImported > 0)
+        {
+            return new ImportResultSummary()
+            {
+                Severity = Severity.Success,
+                Message = L["Result.Success"]
+            };
+        }
+        
+        return new ImportResultSummary()
+        {
+            Severity = Severity.Info,
+            Message = L["Result.Info"]
+        };
+    }
+    
+    private void UploadFiles(IBrowserFile file)
+    {
+        _selectedFile = file;
+        _importResult = null;
+    }
+
+    private async Task StartImport()
+    {
+        if (_selectedFile is null || _selectedImporter is null)
+        {
+            return;
+        }
+
+        _isImporting = true;
+        _importResult = null;
+        
+        try
+        {
+            await using var stream = _selectedFile.OpenReadStream(long.MaxValue);
+            _importResult = await _selectedImporter.ImportAsync(stream, _existingHandling);
+        }
+        catch (Exception ex)
+        {
+            _importResult = new ImportResult
+            {
+                Errors = [new CsvImportError(ex.Message)]
+            };
+        }
+        finally
+        {
+            _isImporting = false;
+        }
+
+        if (_importResult is not null)
+        {
+            _summary = GetResultSummary(_importResult);
+            var severity = GetResultSummary(_importResult);
+            SnackbarNotificationService.Show(severity.Message, severity.Severity);
+        }
+    }
+    
+    private class ImportResultSummary
+    {
+        public Severity Severity { get; init; }
+        public string Message { get; init; } = string.Empty;
+    } 
+}

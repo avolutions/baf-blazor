@@ -1,0 +1,129 @@
+﻿@using Avolutions.Baf.Blazor.Search.Resources
+@using Avolutions.Baf.Core.Search.Models
+@using Avolutions.Baf.Core.Search.Services
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject SearchService SearchService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SearchResources> L
+
+<MudElement Style="width: 500px" @onfocusout="@HandleFocusOut">
+    <div class="d-flex align-center" style="padding: 6px; background-color: white; border-radius: 4px; border: 1px solid rgba(0,0,0,0.2)">
+        <MudIcon Icon="@Icons.Material.Filled.Search" Color="Color.Dark"/>
+        <input value="@_searchTerm"
+               @oninput="OnInputChanged"
+               placeholder="@L["Placeholder"]"
+               style="flex-grow: 1; border: none; outline: none; padding: 6px;" />
+        @if (!string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            <MudTooltip Text="@L["Clear"]">
+                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" Size="Size.Small" OnClick="@ClearSearch" />
+            </MudTooltip>
+        }
+    </div>
+
+    <MudPopover Open="_showPopover"
+                AnchorOrigin="Origin.BottomLeft"
+                TransformOrigin="Origin.TopLeft"
+                RelativeWidth="DropdownWidth.Relative"
+                Class="pa-2"
+                Elevation="4">
+
+        @if (_isSearching && !_results.Any())
+        {
+            <div class="d-flex justify-center p-4">
+                <MudProgressCircular Indeterminate="true" />
+            </div>
+        }
+        else if (!_isSearching && !_results.Any() && !string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            <MudAlert Severity="Severity.Info">@L["NoResults", _searchTerm]</MudAlert>
+        }
+        else if (_results.Any())
+        {
+            <MudList T="string" Dense="true">
+                @foreach (var result in _results)
+                {
+                    <MudListItem OnClick="@(() => NavigateTo(result.Url))">
+                        <MudChip T="string">@result.Type</MudChip>
+                        <MudHighlighter Text="@result.Text" HighlightedText="@_searchTerm"></MudHighlighter>
+                    </MudListItem>
+                }
+            </MudList>
+        }
+    </MudPopover>
+</MudElement>
+
+@code {
+    private string _searchTerm = string.Empty;
+    private List<SearchResult> _results = [];
+    private CancellationTokenSource? _cts;
+    private Timer? _debounceTimer;
+    private bool _isSearching;
+    private bool _showPopover;
+
+    private async Task HandleFocusOut(FocusEventArgs args)
+    {
+        // wait a bit to allow clicks inside popover
+        await Task.Delay(200);
+        ClearSearch();
+        StateHasChanged();
+    }
+
+    private void OnInputChanged(ChangeEventArgs args)
+    {
+        _searchTerm = args.Value?.ToString() ?? string.Empty;
+        
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+
+        _isSearching = true;
+        _showPopover = true;
+        StateHasChanged();
+
+        _debounceTimer?.Dispose();
+        _debounceTimer = new Timer(async void (_) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                if (string.IsNullOrWhiteSpace(_searchTerm))
+                {
+                    _results.Clear();
+                    _isSearching = false;
+                    StateHasChanged();
+                    return;
+                }
+
+                try
+                {
+                    var token = _cts.Token;
+                    _results = await SearchService.SearchAsync(_searchTerm, 25, token);
+                }
+                catch (OperationCanceledException) { }
+                finally
+                {
+                    _isSearching = false;
+                    StateHasChanged();
+                }
+            });
+        }, null, 300, Timeout.Infinite);
+    }
+
+    private void ClearSearch()
+    {
+        _searchTerm = string.Empty;
+        _results.Clear();
+        _isSearching = false;
+        _showPopover = false;
+        StateHasChanged();
+    }
+
+    private void NavigateTo(string url)
+    {
+        ClearSearch();
+        NavigationManager.NavigateTo(url);
+        _showPopover = false;
+    }
+}
