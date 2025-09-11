@@ -57,13 +57,19 @@
         <NoRecordsContent>
             @if(NoRecordsContent is null)
             {
-                <MudText>No records found.</MudText>
+                <MudText>@L["NoRecordsFound"]</MudText>
             }
             else
             {
                 @NoRecordsContent
             }
         </NoRecordsContent>
+        
+        <PagerContent>
+            <MudDataGridPager
+                RowsPerPageString=@L["Pager.RowsPerPage"]
+                InfoFormat=@L["Pager.InfoFormat"] />
+        </PagerContent>
     </MudDataGrid>
 </div>
 
