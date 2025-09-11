@@ -42,8 +42,10 @@
                             @foreach (var action in RowActions)
                             {
                                 <MudTooltip Text="@action.GetText(context.Item)">
-                                    <MudIconButton Icon="@action.GetIcon(context.Item)"
-                                                   Color="@action.GetColor(context.Item)"
+                                    <MudIconButton Color="@action.GetColor(context.Item)"
+                                                   Disabled="@action.IsDisabled(context.Item)"
+                                                   Ripple="@(!action.IsDisabled(context.Item))"
+                                                   Icon="@action.GetIcon(context.Item)"
                                                    Size="Size.Medium"
                                                    OnClick="@(() => action.InvokeAsync(context.Item))" />
                                 </MudTooltip>
