@@ -114,6 +114,15 @@ namespace Avolutions.Baf.Blazor.Audit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Änderungsinformationen.
+        /// </summary>
+        internal static string AuditInfo_Title {
+            get {
+                return ResourceManager.GetString("AuditInfo.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Erstellt.
         /// </summary>
         internal static string Created {
@@ -173,6 +182,15 @@ namespace Avolutions.Baf.Blazor.Audit.Resources {
         internal static string OldValue {
             get {
                 return ResourceManager.GetString("OldValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Änderungsinformationen anzeigen.
+        /// </summary>
+        internal static string ShowAuditInfo {
+            get {
+                return ResourceManager.GetString("ShowAuditInfo", resourceCulture);
             }
         }
         

@@ -1,0 +1,25 @@
+﻿@typeparam T where T : ITrackable
+
+@using Avolutions.Baf.Core.Entity.Abstractions
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<SharedResources> LShared
+
+<MudDialog>
+    <DialogContent>
+        <AuditInfo Entity="Entity"/>
+    </DialogContent>
+    
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="@Cancel">@LShared["Button.Close"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter, EditorRequired] public required T Entity { get; set; }
+    
+    private void Cancel() => MudDialog.Cancel();
+}

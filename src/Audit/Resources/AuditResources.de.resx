@@ -66,4 +66,10 @@
     <data name="LastModified" xml:space="preserve">
         <value>Zuletzt geändert</value>
     </data>
+    <data name="AuditInfo.Title" xml:space="preserve">
+        <value>Änderungsinformationen</value>
+    </data>
+    <data name="ShowAuditInfo" xml:space="preserve">
+        <value>Änderungsinformationen anzeigen</value>
+    </data>
 </root>
