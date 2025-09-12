@@ -60,6 +60,33 @@ namespace Avolutions.Baf.Blazor.DataTable.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Es sind noch keine Datensätze vorhanden..
+        /// </summary>
+        internal static string NoRecordsFound {
+            get {
+                return ResourceManager.GetString("NoRecordsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {first_item}-{last_item} von {all_items}.
+        /// </summary>
+        internal static string Pager_InfoFormat {
+            get {
+                return ResourceManager.GetString("Pager.InfoFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Einträge pro Seite:.
+        /// </summary>
+        internal static string Pager_RowsPerPage {
+            get {
+                return ResourceManager.GetString("Pager.RowsPerPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Liste durchsuchen....
         /// </summary>
         internal static string SearchPlaceholder {

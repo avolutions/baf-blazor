@@ -21,4 +21,13 @@
     <data name="SearchPlaceholder" xml:space="preserve">
         <value>Liste durchsuchen...</value>
     </data>
+    <data name="NoRecordsFound" xml:space="preserve">
+        <value>Es sind noch keine Datensätze vorhanden.</value>
+    </data>
+    <data name="Pager.RowsPerPage" xml:space="preserve">
+        <value>Einträge pro Seite:</value>
+    </data>
+    <data name="Pager.InfoFormat" xml:space="preserve">
+        <value>{first_item}-{last_item} von {all_items}</value>
+    </data>
 </root>

@@ -3,6 +3,7 @@
 @using Avolutions.Baf.Blazor.Inputs.Components
 @using Avolutions.Baf.Core.Identity.Models
 @using Avolutions.Baf.Core.Identity.Resources
+@using Humanizer
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Localization
 @using MudBlazor
@@ -38,7 +39,7 @@
                 <MudTextField
                     @bind-Value="model.UserName"
                     For="@(() => model.UserName)"
-                    Label="@L["Field.Username"]"
+                    Label="@L["Field.UserName"]"
                     Required="true"
                     Variant="Variant.Outlined"
                 />
@@ -49,12 +50,12 @@
                     <MudSelect T="string"
                                @bind-Value="model.RoleName"
                                For="@(() => model.RoleName)"
-                               Label="@L["field.role"]"
+                               Label="@L["Field.Role"]"
                                Required="true"
                                Variant="Variant.Outlined">
                         @foreach (var role in _availableRoles)
                         {
-                            <MudSelectItem Value="@role">@L[$"role.{role}"]</MudSelectItem>
+                            <MudSelectItem Value="@role">@L[$"Role.{role.Transform(To.SentenceCase)}"]</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
