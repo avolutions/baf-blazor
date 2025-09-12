@@ -19,7 +19,7 @@ public class UserFormValidator : AbstractValidator<UserFormModel>
         
         RuleFor(x => x.UserName)
             .NotEmpty()
-            .WithName(localizer["Field.Username"]);
+            .WithName(localizer["Field.UserName"]);
         
         RuleFor(x => x.Password)
             .NotEmpty()
