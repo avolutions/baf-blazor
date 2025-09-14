@@ -26,7 +26,13 @@ public class FormDialogService
         Type formComponentType)
     {
         // Clone the model to avoid modifying the original instance
-        var clonedModel = model.Adapt<T>();
+        var localConfig = new TypeAdapterConfig();
+
+        localConfig.Default
+            .PreserveReference(true)
+            .IgnoreNullValues(true);
+        
+        var clonedModel = model.Adapt<T>(localConfig);
         
         var parameters = new DialogParameters
         {
