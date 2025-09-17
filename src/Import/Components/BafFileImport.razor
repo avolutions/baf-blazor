@@ -67,7 +67,7 @@
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                OnClick="@StartImport"
-               Disabled="_selectedImporter == null || _selectedFile == null">
+               Disabled="_selectedImporter == null || _selectedFile == null || _isImporting">
         @L["Button.StartImport"]
     </MudButton>
 
