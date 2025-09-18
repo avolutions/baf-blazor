@@ -1,8 +1,8 @@
 ﻿@typeparam T where T : IEntity
 @attribute [CascadingTypeParameter(nameof(T))]
 
-@using Avolutions.Baf.Core.Entity.Abstractions
 @using System.Linq.Expressions
+@using Avolutions.Baf.Core.Entity.Abstractions
 @using MudBlazor
 
 @inject IAutocompleteProvider<T> AutocompleteProvider

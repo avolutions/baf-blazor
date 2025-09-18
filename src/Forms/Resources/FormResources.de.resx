@@ -27,4 +27,7 @@
     <data name="ConfirmLeaveDialog.Title" xml:space="preserve">
         <value>Ungespeichterte Änderungen</value>
     </data>
+    <data name="ErrorWhileSaving" xml:space="preserve">
+        <value>Beim Speichern des Datensatzes sind Fehler aufgetreten:</value>
+    </data>
 </root>
