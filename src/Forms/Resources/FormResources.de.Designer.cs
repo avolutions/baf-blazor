@@ -85,5 +85,14 @@ namespace Avolutions.Baf.Blazor.Forms.Resources {
                 return ResourceManager.GetString("ConfirmLeaveDialog.Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Beim Speichern des Datensatzes sind Fehler aufgetreten:.
+        /// </summary>
+        internal static string ErrorWhileSaving {
+            get {
+                return ResourceManager.GetString("ErrorWhileSaving", resourceCulture);
+            }
+        }
     }
 }

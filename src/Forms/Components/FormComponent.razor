@@ -1,7 +1,9 @@
 ﻿@typeparam T
 
 @using Avolutions.Baf.Blazor.Forms.Helpers
+@using Avolutions.Baf.Blazor.Forms.Resources
 @using Avolutions.Baf.Blazor.Forms.Services
+@using Avolutions.Baf.Core.Entity.Exceptions
 @using Avolutions.Baf.Core.Resources
 @using FluentValidation
 @using KellermanSoftware.CompareNetObjects
@@ -12,8 +14,10 @@
 @using Severity = MudBlazor.Severity
 
 @inject ConfirmLeaveDialogService ConfirmLeaveDialogService
-@inject IStringLocalizer<SharedResources> L
 @inject IValidator<T> Validator
+
+@inject IStringLocalizer<FormResources> L
+@inject IStringLocalizer<SharedResources> LShared
 
 @if (!IsSubForm)
 {
@@ -26,10 +30,13 @@
     @if (_errors.Count > 0)
     {
         <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mt-2">
-            @foreach (var error in _errors)
-            {
-                <div>@error</div>
-            }
+            <MudElement HtmlTag="div">
+                <MudText>@L["ErrorWhileSaving"]</MudText>
+                @foreach (var error in _errors)
+                {
+                    <MudText>@error</MudText>
+                }
+            </MudElement>
         </MudAlert>
     }
 
@@ -40,13 +47,14 @@
                 Color="Color.Default"
                 OnClick="@Cancel"
                 Variant="Variant.Filled">
-                @L["Button.Cancel"]
+                @LShared["Button.Cancel"]
             </MudButton>
             <MudButton
                 Color="Color.Primary"
                 OnClick="@(async () => await Submit())"
-                Variant="Variant.Filled">
-                @L["Button.Save"]
+                Variant="Variant.Filled"
+                Disabled="_isSubmitting">
+                @LShared["Button.Save"]
             </MudButton>
         </MudStack>
     }
@@ -65,6 +73,7 @@
     private MudForm _form = null!;
     private readonly List<string> _errors = [];
     private bool _canNavigate;
+    private bool _isSubmitting;
     private T? OriginalModel { get; set; }
     private readonly CompareLogic _comparer = new();
     
@@ -93,6 +102,7 @@
     
     public async Task Submit()
     {
+        _isSubmitting = true;
         _errors.Clear();
         
         if (await ValidateAsync() && OnSubmit.HasDelegate)
@@ -102,11 +112,20 @@
                 _canNavigate = true;
                 await OnSubmit.InvokeAsync();
             }
+            catch (EntityValidationException ex)
+            {
+                foreach (var failure in ex.Failures)
+                {
+                    _errors.Add(failure.ErrorMessage);
+                }
+            }
             catch (Exception ex)
             {
                 _errors.AddRange(ex.Message.Split(Environment.NewLine));
             }
         }
+        
+        _isSubmitting = false;
     }
 
     private async Task Cancel()
