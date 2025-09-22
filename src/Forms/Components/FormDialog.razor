@@ -12,7 +12,7 @@
                        Model="Model"
                        @ref="_form"
                        ShowButtons="false">
-            <DynamicComponent Type="FormComponentType" Parameters="FormParameters" />
+            <DynamicComponent Type="FormComponentType" Parameters="_formParameters" />
         </FormComponent>
     </DialogContent>
 
@@ -26,13 +26,26 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
     [Parameter, EditorRequired] public required T Model { get; set; }
     [Parameter, EditorRequired] public required Type FormComponentType { get; set; }
+    [Parameter, EditorRequired] public required DialogParameters? AdditionalParameters { get; set; }
     
     private FormComponent<T> _form = null!;
+    private Dictionary<string, object?> _formParameters = new();
 
-    private Dictionary<string, object?> FormParameters => new()
+    protected override void OnParametersSet()
     {
-        { "Model", Model }
-    };
+        _formParameters = new Dictionary<string, object?>
+        {
+            ["Model"] = Model
+        };
+        
+        if (AdditionalParameters is not null)
+        {
+            foreach (var additionalParameter in AdditionalParameters)
+            {
+                _formParameters.Add(additionalParameter.Key, additionalParameter.Value);
+            }
+        }
+    }
     
     private async Task Save()
     {
