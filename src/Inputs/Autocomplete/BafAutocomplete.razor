@@ -36,12 +36,12 @@
     [Parameter] public Expression<Func<T>>? ValueExpression { get; set; }
     
     // extra callback for consumers
-    [Parameter] public EventCallback<T?> Changed { get; set; }
+    [Parameter] public EventCallback<T?> OnChanged { get; set; }
     
     private async Task OnValueChanged(T value)
     {
         Value = value;
         await ValueChanged.InvokeAsync(value);
-        await Changed.InvokeAsync(value);
+        await OnChanged.InvokeAsync(value);
     }
 }
