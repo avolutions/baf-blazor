@@ -56,6 +56,13 @@
             }
         </Columns>
         
+        <ChildRowContent>
+            @if (ChildRowContent != null)
+            {
+                @ChildRowContent(context)
+            }
+        </ChildRowContent>
+        
         <NoRecordsContent>
             @if(NoRecordsContent is null)
             {
@@ -68,9 +75,6 @@
         </NoRecordsContent>
         
         <PagerContent>
-            <MudDataGridPager
-                RowsPerPageString=@L["Pager.RowsPerPage"]
-                InfoFormat=@L["Pager.InfoFormat"] />
             @if (ShowPaging)
             {
                 <MudDataGridPager
@@ -82,6 +86,7 @@
 </div>
 
 @code {
+    [Parameter] public RenderFragment<CellContext<T>>? ChildRowContent { get; set; }
     [Parameter] public RenderFragment? Columns { get; set; }
     [Parameter] public RenderFragment? NoRecordsContent { get; set; }
     
