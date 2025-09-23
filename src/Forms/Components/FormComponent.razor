@@ -13,8 +13,8 @@
 @using MudBlazor
 @using Severity = MudBlazor.Severity
 
+@inject IServiceProvider Services
 @inject ConfirmLeaveDialogService ConfirmLeaveDialogService
-@inject IValidator<T> Validator
 
 @inject IStringLocalizer<FormResources> L
 @inject IStringLocalizer<SharedResources> LShared
@@ -24,7 +24,7 @@
     <NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync"/>
 }
 
-<MudForm Model="Model" @ref="@_form" Validation="@FluentValidatorHelper.CreateValidateValue(Validator)">
+<MudForm Model="Model" @ref="@_form" Validation="@FluentValidatorHelper.CreateValidateValue(_validator)">
     @ChildContent(Model)
 
     @if (_errors.Count > 0)
@@ -64,18 +64,26 @@
     [Parameter, EditorRequired] public required T Model { get; set; }
     [Parameter, EditorRequired] public required RenderFragment<T> ChildContent { get; set; } = null!;
     
+    [Parameter] public IValidator<T>? Validator { get; set; }
+    
     [Parameter] public EventCallback OnSubmit { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     
     [Parameter] public bool IsSubForm { get; set; }
     [Parameter] public bool ShowButtons { get; set; } = true;
     
+    private IValidator<T>? _validator;
     private MudForm _form = null!;
     private readonly List<string> _errors = [];
     private bool _canNavigate;
     private bool _isSubmitting;
     private T? OriginalModel { get; set; }
     private readonly CompareLogic _comparer = new();
+    
+    protected override void OnParametersSet()
+    {
+        _validator = Validator ?? Services.GetService(typeof(IValidator<T>)) as IValidator<T>;
+    }
     
     protected override Task OnInitializedAsync()
     {
