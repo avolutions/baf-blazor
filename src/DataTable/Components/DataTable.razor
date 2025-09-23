@@ -71,6 +71,12 @@
             <MudDataGridPager
                 RowsPerPageString=@L["Pager.RowsPerPage"]
                 InfoFormat=@L["Pager.InfoFormat"] />
+            @if (ShowPaging)
+            {
+                <MudDataGridPager
+                    RowsPerPageString=@L["Pager.RowsPerPage"]
+                    InfoFormat=@L["Pager.InfoFormat"]/>
+            }
         </PagerContent>
     </MudDataGrid>
 </div>
@@ -84,6 +90,7 @@
     [Parameter] public bool Loading { get; set; }
     [Parameter] public EventCallback<DataGridRowClickEventArgs<T>> OnRowClick { get; set; }
     [Parameter] public List<RowAction<T>>? RowActions { get; set; }
+    [Parameter] public bool ShowPaging { get; set; } = true;
     
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
     
