@@ -29,7 +29,10 @@
                  QuickFilter="CombinedFilter"
                  RowClick="OnRowClick"
                  SortMode="SortMode.Single"
-                 @attributes="AdditionalAttributes">
+                 @attributes="AdditionalAttributes"
+                 ChildRowContent="@(ChildRowContent is null 
+                                      ? null 
+                                      : (RenderFragment<CellContext<T>>)(ctx => ChildRowContent(ctx)))">
         
         <Columns>
             @Columns
@@ -55,13 +58,6 @@
                 </TemplateColumn>
             }
         </Columns>
-        
-        <ChildRowContent>
-            @if (ChildRowContent != null)
-            {
-                @ChildRowContent(context)
-            }
-        </ChildRowContent>
         
         <NoRecordsContent>
             @if(NoRecordsContent is null)
