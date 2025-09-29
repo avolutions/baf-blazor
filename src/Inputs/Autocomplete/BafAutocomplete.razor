@@ -3,9 +3,12 @@
 
 @using System.Linq.Expressions
 @using Avolutions.Baf.Core.Entity.Abstractions
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
 @using MudBlazor
 
 @inject IAutocompleteProvider<T> AutocompleteProvider
+@inject IStringLocalizer<SharedResources> LShared
 
 <MudAutocomplete T="T"
                  Class="@Class"
@@ -16,6 +19,7 @@
                  SearchFunc="AutocompleteProvider.SearchAsync"
                  ResetValueOnEmptyText="true"
                  Required="@Required"
+                 RequiredError="@(RequiredError ?? LShared["Validation.Required", Label ?? ""])"
                  Style="@Style"
                  ToStringFunc="AutocompleteProvider.ToString"
                  Value="Value"
@@ -29,6 +33,7 @@
     [Parameter] public bool Immediate { get; set; }
     [Parameter] public string? Label { get; set; }
     [Parameter] public bool Required { get; set; }
+    [Parameter] public string? RequiredError { get; set; }
     [Parameter] public string? Style { get; set; }
     [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
     [Parameter] public required T Value { get; set; }
@@ -36,12 +41,12 @@
     [Parameter] public Expression<Func<T>>? ValueExpression { get; set; }
     
     // extra callback for consumers
-    [Parameter] public EventCallback<T?> Changed { get; set; }
+    [Parameter] public EventCallback<T?> OnChanged { get; set; }
     
     private async Task OnValueChanged(T value)
     {
         Value = value;
         await ValueChanged.InvokeAsync(value);
-        await Changed.InvokeAsync(value);
+        await OnChanged.InvokeAsync(value);
     }
 }

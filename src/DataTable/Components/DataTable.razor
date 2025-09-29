@@ -29,7 +29,10 @@
                  QuickFilter="CombinedFilter"
                  RowClick="OnRowClick"
                  SortMode="SortMode.Single"
-                 @attributes="AdditionalAttributes">
+                 @attributes="AdditionalAttributes"
+                 ChildRowContent="@(ChildRowContent is null 
+                                      ? null 
+                                      : (RenderFragment<CellContext<T>>)(ctx => ChildRowContent(ctx)))">
         
         <Columns>
             @Columns
@@ -68,14 +71,18 @@
         </NoRecordsContent>
         
         <PagerContent>
-            <MudDataGridPager
-                RowsPerPageString=@L["Pager.RowsPerPage"]
-                InfoFormat=@L["Pager.InfoFormat"] />
+            @if (ShowPaging)
+            {
+                <MudDataGridPager
+                    RowsPerPageString=@L["Pager.RowsPerPage"]
+                    InfoFormat=@L["Pager.InfoFormat"]/>
+            }
         </PagerContent>
     </MudDataGrid>
 </div>
 
 @code {
+    [Parameter] public RenderFragment<CellContext<T>>? ChildRowContent { get; set; }
     [Parameter] public RenderFragment? Columns { get; set; }
     [Parameter] public RenderFragment? NoRecordsContent { get; set; }
     
@@ -84,6 +91,7 @@
     [Parameter] public bool Loading { get; set; }
     [Parameter] public EventCallback<DataGridRowClickEventArgs<T>> OnRowClick { get; set; }
     [Parameter] public List<RowAction<T>>? RowActions { get; set; }
+    [Parameter] public bool ShowPaging { get; set; } = true;
     
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
     

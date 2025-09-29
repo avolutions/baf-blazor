@@ -23,7 +23,8 @@ public class FormDialogService
     public async Task<T?> ShowAsync<T>(
         string title,
         T model,
-        Type formComponentType)
+        Type formComponentType,
+        DialogParameters? additionalParameters = null)
     {
         // Clone the model to avoid modifying the original instance
         var localConfig = new TypeAdapterConfig();
@@ -37,7 +38,8 @@ public class FormDialogService
         var parameters = new DialogParameters
         {
             ["Model"] = clonedModel,
-            ["FormComponentType"] = formComponentType
+            ["FormComponentType"] = formComponentType,
+            ["AdditionalParameters"] = additionalParameters
         };
         
         var dialog = await _dialogService.ShowAsync<FormDialog<T>>(title, parameters, _options);
