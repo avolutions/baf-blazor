@@ -83,6 +83,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ImportResources.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Jobs\Resources\ExecuteJobDialogResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExecuteJobDialogResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -140,6 +144,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ImportResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Jobs\Resources\ExecuteJobDialogResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExecuteJobDialogResources.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

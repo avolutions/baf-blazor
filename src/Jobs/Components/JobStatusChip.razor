@@ -1,5 +1,9 @@
 ﻿@using Avolutions.Baf.Core.Jobs.Models
+@using Avolutions.Baf.Core.Jobs.Resources
+@using Microsoft.Extensions.Localization
 @using MudBlazor
+
+@inject IStringLocalizer<JobResources> L
 
 @{
     var (color, icon) = Map(Status);
@@ -10,12 +14,11 @@
          Size="Size.Small"
          Label="true"
          Icon="@icon">
-    @Status.ToString()
+    @L[$"Status.{Status.ToString()}"]
 </MudChip>
 
 @code {
     [Parameter] public JobRunStatus Status { get; set; }
-    [Parameter] public string? Text { get; set; }
 
     private static (Color color, string icon) Map(JobRunStatus status) => status switch
     {

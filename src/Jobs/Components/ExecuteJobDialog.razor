@@ -1,0 +1,75 @@
+﻿@using System.Text.Json
+@using Avolutions.Baf.Blazor.Account.Extensions
+@using Avolutions.Baf.Blazor.Jobs.Abstractions
+@using Avolutions.Baf.Blazor.Jobs.Resources
+@using Avolutions.Baf.Core.Jobs.Abstractions
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IJobService JobService
+@inject AuthenticationStateProvider Auth
+
+@inject IStringLocalizer<ExecuteJobDialogResources> L
+@inject IStringLocalizer<SharedResources> LShared
+
+<MudDialog>
+    <DialogContent>
+    @if (_componentType is null)
+    {
+        <MudText Typo="Typo.body1">
+            @L["Content", Job.Name]
+        </MudText>
+    }
+    else
+    {
+        <MudText Typo="Typo.body1">
+            @L["ContentWithParameters", Job.Name]
+        </MudText>
+        <DynamicComponent Type="_componentType" Parameters="_childParams" />
+    }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="@Cancel">@LShared["Button.Cancel"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@Execute">@LShared["Button.Execute"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter] public IJob Job { get; set; } = null!;
+
+    private object _model = null!;
+    private Type? _componentType;
+    private Dictionary<string, object?> _childParams = null!;
+
+    protected override void OnInitialized()
+    {
+        _model = JsonSerializer.Deserialize("{}", Job.ParamType)
+                 ?? throw new InvalidOperationException($"Cannot create parameter instance for {Job.Key}");
+
+        _componentType = (Job as IJobWithParameterComponent)?.ParameterComponentType;
+
+        _childParams = new Dictionary<string, object?>
+        {
+            ["Model"] = _model
+        };
+    }
+    
+    private async Task Execute()
+    {
+        var json  = JsonSerializer.Serialize(_model, Job.ParamType);
+        var typed = JsonSerializer.Deserialize(json, Job.ParamType)!;
+        
+        var methodInfo = typeof(IJobService).GetMethod(nameof(IJobService.EnqueueAsync))!;
+        var generic = methodInfo.MakeGenericMethod(Job.ParamType);
+        var userId = await Auth.GetUserIdAsync();
+        var task = (Task)generic.Invoke(JobService, [Job.Key, typed, userId, CancellationToken.None])!;
+        await task;
+        
+        MudDialog.Close(DialogResult.Ok(true));
+    } 
+    
+    private void Cancel() => MudDialog.Cancel();
+}
