@@ -1,7 +1,6 @@
 ﻿using Avolutions.Baf.Blazor.Jobs.Components;
 using Avolutions.Baf.Blazor.Jobs.Resources;
 using Avolutions.Baf.Core.Jobs.Abstractions;
-using Avolutions.Baf.Core.Jobs.Resources;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 

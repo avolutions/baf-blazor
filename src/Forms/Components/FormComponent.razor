@@ -5,6 +5,7 @@
 @using Avolutions.Baf.Blazor.Forms.Services
 @using Avolutions.Baf.Core.Entity.Exceptions
 @using Avolutions.Baf.Core.Resources
+@using Avolutions.Baf.Core.Settings.Models
 @using FluentValidation
 @using KellermanSoftware.CompareNetObjects
 @using Mapster
@@ -87,13 +88,13 @@
     
     protected override Task OnInitializedAsync()
     {
-        var localConfig = new TypeAdapterConfig();
+        var config = new TypeAdapterConfig();
 
-        localConfig.Default
+        config.Default
             .PreserveReference(true)
             .IgnoreNullValues(true);
-
-        OriginalModel = Model.Adapt<T>(localConfig);
+        
+        OriginalModel = Model.Adapt<T>(config);
         return Task.CompletedTask;
     }
 
