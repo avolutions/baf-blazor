@@ -1,5 +1,5 @@
-﻿@using System.Security.Claims
-@using Avolutions.Baf.Blazor.Account.Components
+﻿@using Avolutions.Baf.Blazor.Account.Components
+@using Avolutions.Baf.Blazor.Account.Extensions
 @using Avolutions.Baf.Blazor.Search.Components
 @using Avolutions.Baf.Blazor.Theme.Settings
 @using Avolutions.Baf.Core.SystemSettings
@@ -11,6 +11,7 @@
 @inject LoadingService LoadingService
 @inject ISettings<ThemeSettings> ThemeSettings
 @inject ISettings<SystemSettings> SystemSettings
+@inject AuthenticationStateProvider Auth
 
 <MudThemeProvider Theme="@_theme"/>
 <MudPopoverProvider />
@@ -29,18 +30,18 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                @if (_userId != Guid.Empty)
+                @if (_userId is not null)
                 {
-                    <UserAvatar UserId="_userId" Size="Size.Small" WithName="true"/>
+                    <UserAvatar UserId="(Guid)_userId" Size="Size.Small" WithName="true"/>
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken/>
+                        <MudIconButton
+                            Icon="@Icons.Material.Filled.Logout"
+                            ButtonType="ButtonType.Submit"
+                            Color="Color.Inherit"
+                            Class="ml-2"/>
+                    </form>
                 }
-                <form action="Account/Logout" method="post">
-                    <AntiforgeryToken/>
-                    <MudIconButton
-                        Icon="@Icons.Material.Filled.Logout"
-                        ButtonType="ButtonType.Submit"
-                        Color="Color.Inherit"
-                        Class="ml-2"/>
-                </form>
             </Authorized>
         </AuthorizeView>
     </MudAppBar>
@@ -67,7 +68,7 @@
 @code {
     private bool _drawerOpen = true;
     private MudTheme _theme = new();
-    private Guid _userId;
+    private Guid? _userId;
 
     [CascadingParameter] private Task<AuthenticationState> AuthTask { get; set; } = default!;
 
@@ -80,17 +81,7 @@
     {
         LoadingService.OnLoadingChanged += StateHasChanged;
         _theme = Theme.Create(ThemeSettings.Value);
-        
-        var auth = await AuthTask;
-        if (auth.User.Identity?.IsAuthenticated == true)
-        {
-            var claim = auth.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (claim is not null && Guid.TryParse(claim.Value, out var userId))
-            {
-                _userId = userId;
-            }
-           
-        }
+        _userId = await Auth.GetUserIdAsync();
     }
     
     public void Dispose()
