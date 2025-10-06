@@ -13,19 +13,15 @@
 
     @if (WithName)
     {
-        <MudText Typo="Typo.body1">@UserInfo.Name</MudText>
+        <MudText Typo="@Typo">@UserInfo.Name</MudText>
     }
 </MudStack>
 
 @code {
-    [Parameter]
-    public required Guid UserId { get; set; }
-    
-    [Parameter]
-    public required Size Size { get; set; } = Size.Large;
-    
-    [Parameter]
-    public bool WithName { get; set; }
+    [Parameter] public required Size Size { get; set; } = Size.Large;
+    [Parameter] public Typo Typo { get; set; } = Typo.body1;
+    [Parameter] public required Guid UserId { get; set; }
+    [Parameter] public bool WithName { get; set; }
     
     private UserInfo UserInfo { get; set; } = null!;
 

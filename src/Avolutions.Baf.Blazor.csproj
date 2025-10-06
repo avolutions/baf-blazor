@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>Avolutions.Baf.Blazor</PackageId>
-    <Version>0.14.0</Version>
+    <Version>0.15.0</Version>
 
     <Title>Avolutions BAF Blazor</Title>
     <Company>Avolutions</Company>
@@ -29,7 +29,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avolutions.Baf.Core" Version="0.14.0" />
+    <PackageReference Include="Avolutions.Baf.Core" Version="0.15.0" />
     <PackageReference Include="CompareNETObjects" Version="4.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
@@ -82,6 +82,10 @@
     <EmbeddedResource Update="Import\Resources\ImportResources.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ImportResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Jobs\Resources\ExecuteJobDialogResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExecuteJobDialogResources.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
@@ -140,6 +144,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ImportResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Jobs\Resources\ExecuteJobDialogResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExecuteJobDialogResources.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

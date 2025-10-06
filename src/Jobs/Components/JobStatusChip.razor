@@ -1,0 +1,32 @@
+﻿@using Avolutions.Baf.Core.Jobs.Models
+@using Avolutions.Baf.Core.Jobs.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<JobResources> L
+
+@{
+    var (color, icon) = Map(Status);
+}
+<MudChip T="string"
+         Color="@color"
+         Variant="Variant.Filled"
+         Size="Size.Small"
+         Label="true"
+         Icon="@icon">
+    @L[$"Status.{Status.ToString()}"]
+</MudChip>
+
+@code {
+    [Parameter] public JobRunStatus Status { get; set; }
+
+    private static (Color color, string icon) Map(JobRunStatus status) => status switch
+    {
+        JobRunStatus.Queued => (Color.Default, Icons.Material.Filled.Schedule),
+        JobRunStatus.Running  => (Color.Info, Icons.Material.Filled.PlayArrow),
+        JobRunStatus.Succeeded => (Color.Success, Icons.Material.Filled.CheckCircle),
+        JobRunStatus.Failed => (Color.Error, Icons.Material.Filled.Error),
+        JobRunStatus.Canceled => (Color.Warning, Icons.Material.Filled.Cancel),
+        _ => (Color.Default, Icons.Material.Filled.Help)
+    };
+}

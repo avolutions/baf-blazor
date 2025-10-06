@@ -4,6 +4,7 @@
 @using Avolutions.Baf.Blazor.Settings.Resources
 @using Avolutions.Baf.Blazor.Snackbar.Services
 @using Avolutions.Baf.Core.Settings.Abstractions
+@using Avolutions.Baf.Core.Settings.Models
 @using Mapster
 @using Microsoft.Extensions.Localization
 @using MudBlazor
@@ -11,6 +12,7 @@
 @inject SnackbarNotificationService SnackbarNotificationService
 @inject NavigationManager NavigationManager
 @inject ISettings<T> Settings
+
 @inject IStringLocalizer<SettingResources> L
 
 <FormComponent T="T"
@@ -25,14 +27,14 @@
 @code {
     [Parameter] public RenderFragment<T> ChildContent { get; set; } = null!;
     
-    private T Model { get; set; } = default!;
-    private T ClonedModel { get; set; } = default!;
+    private T Model { get; set; } = null!;
+    private T ClonedModel { get; set; } = null!;
     
     protected override void OnInitialized()
     {
         Model = Settings.Value;
         // Clone the settings to avoid modifying the original instance
-        ClonedModel = Model.Adapt<T>();
+        ClonedModel = Model.Adapt<T>(); 
     }
     
     private async Task Submit()

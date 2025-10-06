@@ -49,7 +49,7 @@
                                                    Disabled="@action.IsDisabled(context.Item)"
                                                    Ripple="@(!action.IsDisabled(context.Item))"
                                                    Icon="@action.GetIcon(context.Item)"
-                                                   Size="Size.Medium"
+                                                   Size="@action.GetSize(context.Item)"
                                                    OnClick="@(() => action.InvokeAsync(context.Item))" />
                                 </MudTooltip>
                             }
