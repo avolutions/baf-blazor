@@ -27,7 +27,9 @@
         <MudText Typo="Typo.body1">
             @L["ContentWithParameters", Job.Name]
         </MudText>
-        <DynamicComponent Type="_componentType" Parameters="_childParams" />
+        <MudElement HtmlTag="div" Class="pt-4">
+            <DynamicComponent Type="_componentType" Parameters="_childParams" />
+        </MudElement>
     }
     </DialogContent>
     <DialogActions>
