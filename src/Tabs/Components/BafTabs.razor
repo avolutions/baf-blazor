@@ -1,0 +1,62 @@
+﻿@using Avolutions.Baf.Blazor.Tabs.Abstractions
+@using Avolutions.Baf.Blazor.Tabs.Models
+@using Microsoft.Extensions.DependencyInjection
+@using MudBlazor
+
+@inject IServiceProvider Services;
+
+<MudTabs ActivePanelIndexChanged="OnTabChanged"
+         ApplyEffectsToContainer="true"
+         PanelClass="pa-4"
+         Border="true">
+    @foreach (var tab in _tabs)
+    {
+        <MudTabPanel Text="@tab.Title" BadgeData="@tab.BadgeCount">
+            <DynamicComponent Type="tab.ComponentType" Parameters="tab.GetParameters()"/>
+        </MudTabPanel>
+    }
+</MudTabs>
+
+@code {
+    [Parameter] public IReadOnlyList<BafTabBuilder> Tabs { get; set; } = [];
+    
+    private readonly List<IBafTab> _tabs = [];
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _tabs.Clear();
+
+        foreach (var request in Tabs)
+        {
+            // Create each tab via DI + runtime args
+            var tab = (IBafTab)ActivatorUtilities.CreateInstance(
+                Services,
+                request.TabType,
+                request.Args ?? []
+            );
+
+            _tabs.Add(tab);
+        }
+        
+        foreach (var tab in _tabs)
+        {
+            await tab.OnAddedAsync();
+        }
+        
+        // Activate the first tab by default (if any)
+        if (_tabs.Count > 0)
+        {
+            await _tabs[0].OnActivatedAsync();
+        }
+    }
+    
+    private async Task OnTabChanged(int index)
+    {
+        if (index < 0 || index >= _tabs.Count)
+        {
+            return;
+        }
+        
+        await _tabs[index].OnActivatedAsync();
+    }
+}
