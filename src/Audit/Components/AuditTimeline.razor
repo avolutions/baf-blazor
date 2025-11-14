@@ -1,17 +1,22 @@
-﻿@using System.Dynamic
+﻿@typeparam T where T : class, IEntity;
+
+@using System.Dynamic
 @using Avolutions.Baf.Blazor.Audit.Resources
+@using Avolutions.Baf.Core.Audit.Abstractions
 @using Avolutions.Baf.Core.Audit.Models
+@using Avolutions.Baf.Core.Entity.Abstractions
 @using Avolutions.Baf.Core.Identity.Caching
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 @using Newtonsoft.Json
 
+@inject IAuditLogService<T> AuditLogService
 @inject IStringLocalizer<AuditResources> L
 @inject IUserCache UserCache
 
- <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
     <MudText Typo="Typo.h6">
-        @L["Title", Items.Count]
+        @L["Title", _items.Count]
     </MudText>
     <MudElement>
         <MudSelect T="SortOrder" Value="@_sort" ValueChanged="OnSortChanged" Variant="Variant.Outlined">
@@ -93,14 +98,20 @@
 
 
 @code {
-    [Parameter] public IReadOnlyList<AuditLog> Items { get; set; } = [];
+    [Parameter, EditorRequired] public Guid OwnerId { get; set; }
     [Parameter] public IStringLocalizer? LFields { get; set; }
     
+    private IReadOnlyList<AuditLog> _items = [];
     private Guid? _expandedId;
     private SortOrder _sort = SortOrder.NewestFirst;
 
     public enum SortOrder { NewestFirst, OldestFirst }
-    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _items = await AuditLogService.GetAllAsync(OwnerId);
+    }
+
     private void OnSortChanged(SortOrder order)
     {
         _sort = order;
@@ -110,8 +121,8 @@
 
     private IEnumerable<AuditLog> SortedItems()
         => _sort == SortOrder.NewestFirst
-            ? Items.OrderByDescending(i => i.CreatedAt)
-            : Items.OrderBy(i => i.CreatedAt);    
+            ? _items.OrderByDescending(i => i.CreatedAt)
+            : _items.OrderBy(i => i.CreatedAt);    
 
     private bool IsOpen(Guid id) => _expandedId == id;
 
