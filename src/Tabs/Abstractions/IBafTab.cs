@@ -2,11 +2,11 @@
 
 public interface IBafTab
 {
-    string Title { get; }
-    int? BadgeCount { get; }
+    string Title { get; set; }
+    int? BadgeCount { get; set; }
     Type ComponentType { get; }
+    Dictionary<string, object?> Parameters { get; set;  }
     
-    IDictionary<string, object?> GetParameters();
+    Task ReloadAsync();
     ValueTask OnAddedAsync();
-    ValueTask OnActivatedAsync();
 }

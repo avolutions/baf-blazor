@@ -5,20 +5,21 @@
 
 @inject IServiceProvider Services;
 
-<MudTabs ActivePanelIndexChanged="OnTabChanged"
-         ApplyEffectsToContainer="true"
+<MudTabs ApplyEffectsToContainer="true"
          PanelClass="pa-4"
          Border="true">
     @foreach (var tab in _tabs)
     {
         <MudTabPanel Text="@tab.Title" BadgeData="@tab.BadgeCount">
-            <DynamicComponent Type="tab.ComponentType" Parameters="tab.GetParameters()"/>
+            <CascadingValue Value="tab" IsFixed="true">
+                <DynamicComponent Type="tab.ComponentType" Parameters="tab.Parameters"/>
+            </CascadingValue>
         </MudTabPanel>
     }
 </MudTabs>
 
 @code {
-    [Parameter] public IReadOnlyList<BafTabBuilder> Tabs { get; set; } = [];
+    [Parameter] public IReadOnlyList<BafTabPanel> Tabs { get; set; } = [];
     
     private readonly List<IBafTab> _tabs = [];
     
@@ -34,29 +35,20 @@
                 request.TabType,
                 request.Args ?? []
             );
-
+            
+            if (tab is BafTab concrete)
+            {
+                concrete.ReloadHandler = () => ReloadTabAsync(concrete);
+            }
+            
             _tabs.Add(tab);
-        }
-        
-        foreach (var tab in _tabs)
-        {
             await tab.OnAddedAsync();
-        }
-        
-        // Activate the first tab by default (if any)
-        if (_tabs.Count > 0)
-        {
-            await _tabs[0].OnActivatedAsync();
         }
     }
     
-    private async Task OnTabChanged(int index)
+    private async Task ReloadTabAsync(IBafTab tab)
     {
-        if (index < 0 || index >= _tabs.Count)
-        {
-            return;
-        }
-        
-        await _tabs[index].OnActivatedAsync();
+        await tab.OnAddedAsync();
+        await InvokeAsync(StateHasChanged);
     }
 }

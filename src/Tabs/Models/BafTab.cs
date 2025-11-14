@@ -4,19 +4,14 @@ namespace Avolutions.Baf.Blazor.Tabs.Models;
 
 public abstract class BafTab : IBafTab
 {
-    private readonly Dictionary<string, object?> _parameters = new();
-    
-    public abstract string Title { get; }
-    public virtual int? BadgeCount { get; protected set; }
+    public virtual string Title { get; set; } = string.Empty;
+    public virtual int? BadgeCount { get; set; }
     public abstract Type ComponentType { get; }
-    
-    public virtual IDictionary<string, object?> GetParameters() => _parameters;
-
-    protected void SetParameter(string name, object? value)
-    {
-        _parameters[name] = value;
-    }
-    
+    public Dictionary<string, object?> Parameters { get; set; } = [];
     public virtual ValueTask OnAddedAsync() => ValueTask.CompletedTask;
-    public virtual ValueTask OnActivatedAsync() => ValueTask.CompletedTask;
+    internal Func<Task>? ReloadHandler { get; set; }
+    public Task ReloadAsync()
+    {
+        return ReloadHandler is null ? Task.CompletedTask : ReloadHandler.Invoke();
+    }
 }
