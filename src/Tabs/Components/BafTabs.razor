@@ -12,7 +12,7 @@
          Border="true">
     @foreach (var tab in _tabs)
     {
-        <MudTabPanel Text="@tab.Title">
+        <MudTabPanel Text="@tab.Title" BadgeData="@tab.BadgeData">
             @tab.Content
         </MudTabPanel>
     }
@@ -23,6 +23,7 @@
     
     private List<TabInfo> _tabs = [];
     private int _activeTabIndex = 0;
+    private SemaphoreSlim _initSemaphore = new(1, 1);
     
     private class TabInfo
     {
@@ -32,16 +33,29 @@
         public IBafTab TabInstance { get; set; } = null!;
     }
     
-    internal void RegisterTab(string title, object? badgeData, RenderFragment content, IBafTab tabInstance)
+    internal async Task RegisterTabAsync(string title, RenderFragment content, IBafTab tabInstance)
     {
-        _tabs.Add(new TabInfo
+        // Use semaphore to ensure tabs are added sequentially
+        await _initSemaphore.WaitAsync();
+        try
         {
-            Title = title,
-            BadgeData = badgeData,
-            Content = content,
-            TabInstance = tabInstance
-        });
-        StateHasChanged();
+            // Call OnAddedAsync to let tab load its badge data
+            await tabInstance.OnAddedAsync();
+            
+            _tabs.Add(new TabInfo
+            {
+                Title = title,
+                BadgeData = tabInstance.BadgeData,
+                Content = content,
+                TabInstance = tabInstance
+            });
+            
+            StateHasChanged();
+        }
+        finally
+        {
+            _initSemaphore.Release();
+        }
     }
     
     internal void UpdateBadgeData(IBafTab tabInstance, object? badgeData)
@@ -60,6 +74,7 @@
         {
             _activeTabIndex = index;
             await _tabs[index].TabInstance.OnActivatedAsync();
+            StateHasChanged();
         }
     }
     
@@ -70,5 +85,10 @@
             // Activate the first tab
             await _tabs[0].TabInstance.OnActivatedAsync();
         }
+    } 
+    
+    public void Dispose()
+    {
+        _initSemaphore.Dispose();
     }
 }

@@ -13,18 +13,17 @@ public abstract class BafTab : ComponentBase, IBafTab
     
     public virtual object? BadgeData => null;
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Parent?.RegisterTab(Title, BadgeData, BuildRenderTree, this);
+        if (Parent != null)
+        {
+            await Parent.RegisterTabAsync(Title, BuildRenderTree, this);
+        }
     }
     
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public virtual Task OnAddedAsync()
     {
-        if (firstRender)
-        {
-            // Update badge data after async initialization
-            Parent?.UpdateBadgeData(this, BadgeData);
-        }
+        return Task.CompletedTask;
     }
     
     public virtual Task OnActivatedAsync()
