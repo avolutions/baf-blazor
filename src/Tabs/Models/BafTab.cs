@@ -1,17 +1,34 @@
 ﻿using Avolutions.Baf.Blazor.Tabs.Abstractions;
+using Avolutions.Baf.Blazor.Tabs.Components;
+using Microsoft.AspNetCore.Components;
 
 namespace Avolutions.Baf.Blazor.Tabs.Models;
 
-public abstract class BafTab : IBafTab
+public abstract class BafTab : ComponentBase, IBafTab
 {
-    public virtual string Title { get; set; } = string.Empty;
-    public virtual int? BadgeCount { get; set; }
-    public abstract Type ComponentType { get; }
-    public Dictionary<string, object?> Parameters { get; set; } = [];
-    public virtual ValueTask OnAddedAsync() => ValueTask.CompletedTask;
-    internal Func<Task>? ReloadHandler { get; set; }
-    public Task ReloadAsync()
+    [CascadingParameter]
+    private BafTabs? Parent { get; set; }
+    
+    public abstract string Title { get; }
+    
+    public virtual object? BadgeData => null;
+    
+    protected override void OnInitialized()
     {
-        return ReloadHandler is null ? Task.CompletedTask : ReloadHandler.Invoke();
+        Parent?.RegisterTab(Title, BadgeData, BuildRenderTree, this);
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Update badge data after async initialization
+            Parent?.UpdateBadgeData(this, BadgeData);
+        }
+    }
+    
+    public virtual Task OnActivatedAsync()
+    {
+        return Task.CompletedTask;
     }
 }

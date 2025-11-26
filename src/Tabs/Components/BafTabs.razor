@@ -1,54 +1,74 @@
 ﻿@using Avolutions.Baf.Blazor.Tabs.Abstractions
-@using Avolutions.Baf.Blazor.Tabs.Models
-@using Microsoft.Extensions.DependencyInjection
 @using MudBlazor
 
-@inject IServiceProvider Services;
+<CascadingValue Value="this">
+    <div style="display: none;">
+        @ChildContent
+    </div>
+</CascadingValue>
 
-<MudTabs ApplyEffectsToContainer="true"
+<MudTabs ActivePanelIndexChanged="OnTabChanged"
          PanelClass="pa-4"
          Border="true">
     @foreach (var tab in _tabs)
     {
-        <MudTabPanel Text="@tab.Title" BadgeData="@tab.BadgeCount">
-            <CascadingValue Value="tab" IsFixed="true">
-                <DynamicComponent Type="tab.ComponentType" Parameters="tab.Parameters"/>
-            </CascadingValue>
+        <MudTabPanel Text="@tab.Title">
+            @tab.Content
         </MudTabPanel>
     }
 </MudTabs>
 
 @code {
-    [Parameter] public IReadOnlyList<BafTabPanel> Tabs { get; set; } = [];
+    [Parameter] public RenderFragment? ChildContent { get; set; }
     
-    private readonly List<IBafTab> _tabs = [];
+    private List<TabInfo> _tabs = [];
+    private int _activeTabIndex = 0;
     
-    protected override async Task OnParametersSetAsync()
+    private class TabInfo
     {
-        _tabs.Clear();
-
-        foreach (var request in Tabs)
+        public string Title { get; set; } = string.Empty;
+        public object? BadgeData { get; set; }
+        public RenderFragment Content { get; set; } = null!;
+        public IBafTab TabInstance { get; set; } = null!;
+    }
+    
+    internal void RegisterTab(string title, object? badgeData, RenderFragment content, IBafTab tabInstance)
+    {
+        _tabs.Add(new TabInfo
         {
-            // Create each tab via DI + runtime args
-            var tab = (IBafTab)ActivatorUtilities.CreateInstance(
-                Services,
-                request.TabType,
-                request.Args ?? []
-            );
-            
-            if (tab is BafTab concrete)
-            {
-                concrete.ReloadHandler = () => ReloadTabAsync(concrete);
-            }
-            
-            _tabs.Add(tab);
-            await tab.OnAddedAsync();
+            Title = title,
+            BadgeData = badgeData,
+            Content = content,
+            TabInstance = tabInstance
+        });
+        StateHasChanged();
+    }
+    
+    internal void UpdateBadgeData(IBafTab tabInstance, object? badgeData)
+    {
+        var tab = _tabs.FirstOrDefault(t => t.TabInstance == tabInstance);
+        if (tab != null)
+        {
+            tab.BadgeData = badgeData;
+            StateHasChanged();
         }
     }
     
-    private async Task ReloadTabAsync(IBafTab tab)
+    private async Task OnTabChanged(int index)
     {
-        await tab.OnAddedAsync();
-        await InvokeAsync(StateHasChanged);
+        if (index >= 0 && index < _tabs.Count)
+        {
+            _activeTabIndex = index;
+            await _tabs[index].TabInstance.OnActivatedAsync();
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _tabs.Count > 0)
+        {
+            // Activate the first tab
+            await _tabs[0].TabInstance.OnActivatedAsync();
+        }
     }
 }
