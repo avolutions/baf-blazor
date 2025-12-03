@@ -8,6 +8,10 @@
     transition: opacity .2s ease-in-out;
 }
 
+.baf-data-table ::deep.row-action-buttons .mud-icon-button.invisible {
+    visibility: hidden;
+}
+
 .baf-data-table ::deep.mud-table-row:hover .row-action-buttons .mud-icon-button {
     opacity: 1;
     pointer-events: auto;

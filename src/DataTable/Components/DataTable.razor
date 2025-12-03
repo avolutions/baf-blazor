@@ -47,8 +47,10 @@
                         <div class="row-action-buttons">
                             @foreach (var action in RowActions)
                             {
-                                <MudTooltip Text="@action.GetText(context.Item)">
-                                    <MudIconButton Color="@action.GetColor(context.Item)"
+                                <MudTooltip Text="@action.GetText(context.Item)"
+                                            Disabled="@(!action.IsVisible(context.Item))">
+                                    <MudIconButton Class="@(!action.IsVisible(context.Item) ? "invisible" : "")"
+                                                   Color="@action.GetColor(context.Item)"
                                                    Disabled="@action.IsDisabled(context.Item)"
                                                    Ripple="@(!action.IsDisabled(context.Item))"
                                                    Icon="@action.GetIcon(context.Item)"
