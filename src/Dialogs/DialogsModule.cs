@@ -8,6 +8,7 @@ public class DialogsModule : IFeatureModule
 {
     public void Register(IServiceCollection services)
     {
+        services.AddScoped<ActionDialogService>();
         services.AddScoped<DeleteDialogService>();
     }
 }
