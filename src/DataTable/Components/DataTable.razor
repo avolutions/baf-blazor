@@ -22,12 +22,15 @@
     }
 
     <MudDataGrid T="T"
+                 HeaderClass="@(ShowHeader ? string.Empty : "no-header")"
                  Hover="true"
                  Items="Items"
                  Loading="Loading"
                  LoadingProgressColor="Color.Secondary"
                  QuickFilter="CombinedFilter"
                  RowClick="OnRowClick"
+                 RowsPerPage="@(ShowPaging ? 10 : int.MaxValue)"
+                 RowClassFunc="RowClassFunc"
                  SortMode="SortMode.Single"
                  @attributes="AdditionalAttributes"
                  ChildRowContent="@(ChildRowContent is null 
@@ -44,8 +47,10 @@
                         <div class="row-action-buttons">
                             @foreach (var action in RowActions)
                             {
-                                <MudTooltip Text="@action.GetText(context.Item)">
-                                    <MudIconButton Color="@action.GetColor(context.Item)"
+                                <MudTooltip Text="@action.GetText(context.Item)"
+                                            Disabled="@(!action.IsVisible(context.Item))">
+                                    <MudIconButton Class="@(!action.IsVisible(context.Item) ? "invisible" : "")"
+                                                   Color="@action.GetColor(context.Item)"
                                                    Disabled="@action.IsDisabled(context.Item)"
                                                    Ripple="@(!action.IsDisabled(context.Item))"
                                                    Icon="@action.GetIcon(context.Item)"
@@ -91,7 +96,9 @@
     [Parameter] public bool Loading { get; set; }
     [Parameter] public EventCallback<DataGridRowClickEventArgs<T>> OnRowClick { get; set; }
     [Parameter] public List<RowAction<T>>? RowActions { get; set; }
+    [Parameter] public Func<T, int, string>? RowClassFunc { get; set; }
     [Parameter] public bool ShowPaging { get; set; } = true;
+    [Parameter] public bool ShowHeader { get; set; } = true;
     
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
     

@@ -1,0 +1,94 @@
+﻿@using Avolutions.Baf.Blazor.Tabs.Abstractions
+@using MudBlazor
+
+<CascadingValue Value="this">
+    <div style="display: none;">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+<MudTabs ActivePanelIndexChanged="OnTabChanged"
+         PanelClass="pa-4"
+         Border="true">
+    @foreach (var tab in _tabs)
+    {
+        <MudTabPanel Text="@tab.Title" BadgeData="@tab.BadgeData">
+            @tab.Content
+        </MudTabPanel>
+    }
+</MudTabs>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    private List<TabInfo> _tabs = [];
+    private int _activeTabIndex = 0;
+    private SemaphoreSlim _initSemaphore = new(1, 1);
+    
+    private class TabInfo
+    {
+        public string Title { get; set; } = string.Empty;
+        public object? BadgeData { get; set; }
+        public RenderFragment Content { get; set; } = null!;
+        public IBafTab TabInstance { get; set; } = null!;
+    }
+    
+    internal async Task RegisterTabAsync(string title, RenderFragment content, IBafTab tabInstance)
+    {
+        // Use semaphore to ensure tabs are added sequentially
+        await _initSemaphore.WaitAsync();
+        try
+        {
+            // Call OnAddedAsync to let tab load its badge data
+            await tabInstance.OnAddedAsync();
+            
+            _tabs.Add(new TabInfo
+            {
+                Title = title,
+                BadgeData = tabInstance.BadgeData,
+                Content = content,
+                TabInstance = tabInstance
+            });
+            
+            StateHasChanged();
+        }
+        finally
+        {
+            _initSemaphore.Release();
+        }
+    }
+    
+    internal void UpdateBadgeData(IBafTab tabInstance, object? badgeData)
+    {
+        var tab = _tabs.FirstOrDefault(t => t.TabInstance == tabInstance);
+        if (tab != null)
+        {
+            tab.BadgeData = badgeData;
+            StateHasChanged();
+        }
+    }
+    
+    private async Task OnTabChanged(int index)
+    {
+        if (index >= 0 && index < _tabs.Count)
+        {
+            _activeTabIndex = index;
+            await _tabs[index].TabInstance.OnActivatedAsync();
+            StateHasChanged();
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _tabs.Count > 0)
+        {
+            // Activate the first tab
+            await _tabs[0].TabInstance.OnActivatedAsync();
+        }
+    } 
+    
+    public void Dispose()
+    {
+        _initSemaphore.Dispose();
+    }
+}

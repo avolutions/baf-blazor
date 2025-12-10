@@ -8,7 +8,27 @@
     transition: opacity .2s ease-in-out;
 }
 
+.baf-data-table ::deep.row-action-buttons .mud-icon-button.invisible {
+    visibility: hidden;
+}
+
 .baf-data-table ::deep.mud-table-row:hover .row-action-buttons .mud-icon-button {
     opacity: 1;
     pointer-events: auto;
+}
+
+.baf-data-table ::deep.row-disabled .mud-table-cell {
+    color: var(--mud-palette-text-disabled);
+}
+
+.baf-data-table ::deep.no-header {
+    display: none !important;
+}
+
+.baf-data-table ::deep.mud-table-cell.text-right {
+    text-align: right;
+}
+
+.baf-data-table ::deep.mud-table-cell.text-right span {
+    display: inline;
 }

@@ -1,0 +1,108 @@
+﻿@typeparam TData
+
+@using MudBlazor
+
+@implements IAsyncDisposable
+
+<MudCard Style="@GetGridStyle()">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Refresh" 
+                           OnClick="@ReloadDataAsync"
+                           Disabled="@IsLoading" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (IsLoading)
+        {
+            <MudProgressCircular Indeterminate="true" />
+        }
+        else if (HasError)
+        {
+            <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+        }
+        else if (Data is not null)
+        {
+            @ChildContent?.Invoke(Data)
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [CascadingParameter] private Dashboard? ParentDashboard { get; set; }
+
+    [Parameter] public string Title { get; set; } = "Card";
+    [Parameter] public int Column { get; set; } = 1;
+    [Parameter] public int Row { get; set; } = 1;
+    [Parameter] public int ColumnSpan { get; set; } = 1;
+    [Parameter] public int RowSpan { get; set; } = 1;
+    [Parameter] public Func<CancellationToken, Task<TData>>? LoadDataFunc { get; set; }
+    [Parameter] public RenderFragment<TData>? ChildContent { get; set; }
+
+    private TData? Data { get; set; }
+    private bool IsLoading { get; set; }
+    private bool HasError { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadDataAsync();
+    }
+
+    public async Task ReloadDataAsync()
+    {
+        if (LoadDataFunc is null) return;
+
+        _cts?.CancelAsync();
+        _cts = new CancellationTokenSource();
+
+        IsLoading = true;
+        HasError = false;
+        StateHasChanged();
+
+        try
+        {
+            if (ParentDashboard is not null)
+            {
+                await ParentDashboard.LoadingSemaphore.WaitAsync(_cts.Token);
+            }
+
+            try
+            {
+                Data = await LoadDataFunc(_cts.Token);
+            }
+            finally
+            {
+                ParentDashboard?.LoadingSemaphore.Release();
+            }
+        }
+        catch (Exception ex)
+        {
+            HasError = true;
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetGridStyle()
+    {
+        return $"grid-column: {Column} / span {ColumnSpan}; grid-row: {Row} / span {RowSpan};";
+    }
+    
+    public ValueTask DisposeAsync()
+    {
+        _cts?.CancelAsync();
+        _cts?.Dispose();
+        
+        return ValueTask.CompletedTask;
+    }
+}

@@ -9,7 +9,7 @@
 @inject IStringLocalizer<AuditResources> L
 @inject IUserCache UserCache
 
- <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
     <MudText Typo="Typo.h6">
         @L["Title", Items.Count]
     </MudText>
@@ -100,7 +100,7 @@
     private SortOrder _sort = SortOrder.NewestFirst;
 
     public enum SortOrder { NewestFirst, OldestFirst }
-    
+
     private void OnSortChanged(SortOrder order)
     {
         _sort = order;

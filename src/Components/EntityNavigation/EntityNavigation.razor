@@ -1,0 +1,60 @@
+﻿@typeparam T where T : class, IEntity, INavigable
+
+@using Avolutions.Baf.Core.Entity.Abstractions
+@using Avolutions.Baf.Core.Entity.Models
+@using MudBlazor
+
+@inject NavigationManager NavigationManager
+@inject IEntityNavigationCache<T> EntityNavigationCache
+@inject IEntityRouteProvider<T> Routes
+
+@if (_result is not null)
+{
+    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+        <MudIconButton Icon="@Icons.Material.Filled.FirstPage"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(!_result.HasFirst)"
+                       OnClick="@NavigateFirst" />
+        <MudIconButton Icon="@Icons.Material.Filled.NavigateBefore"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(!_result.HasPrevious)"
+                       OnClick="@NavigatePrevious" />
+        <MudIconButton Icon="@Icons.Material.Filled.NavigateNext"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(!_result.HasNext)"
+                       OnClick="@NavigateNext" />
+        <MudIconButton Icon="@Icons.Material.Filled.LastPage"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(!_result.HasLast)"
+                       OnClick="@NavigateLast" />
+    </MudStack>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid CurrentId { get; set; }
+
+    private EntityNavigationResult? _result;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _result = await EntityNavigationCache.GetNavigationAsync(CurrentId);
+    }
+
+    private void NavigateFirst() => Navigate(_result?.FirstId);
+    private void NavigatePrevious() => Navigate(_result?.PreviousId);
+    private void NavigateNext() => Navigate(_result?.NextId);
+    private void NavigateLast() => Navigate(_result?.LastId);
+
+    private void Navigate(Guid? id)
+    {
+        if (id.HasValue)
+        {
+            NavigationManager.NavigateTo(Routes.Details(id.Value));
+        }
+    }
+}

@@ -1,0 +1,15 @@
+﻿<div style="display: grid; grid-template-columns: repeat(@Columns, 1fr); grid-template-rows: repeat(@Rows, 1fr); gap: 16px; height: 100%;">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter] public int Columns { get; set; } = 4;
+    [Parameter] public int Rows { get; set; } = 4;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private readonly SemaphoreSlim _loadingSemaphore = new(1, 1);
+
+    internal SemaphoreSlim LoadingSemaphore => _loadingSemaphore;
+}
