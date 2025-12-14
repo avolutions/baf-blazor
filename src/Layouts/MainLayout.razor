@@ -2,13 +2,17 @@
 @using Avolutions.Baf.Blazor.Account.Extensions
 @using Avolutions.Baf.Blazor.Search.Components
 @using Avolutions.Baf.Blazor.Theme.Settings
+@using Avolutions.Baf.Core.Loading.Abstractions
 @using Avolutions.Baf.Core.SystemSettings
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 
 @inherits LayoutComponentBase
 
-@inject LoadingService LoadingService
+@implements IDisposable
+
+@inject ILoadingService LoadingService
+@inject IBlockingLoadingService BlockingLoadingService
 @inject ISettings<ThemeSettings> ThemeSettings
 @inject ISettings<SystemSettings> SystemSettings
 @inject AuthenticationStateProvider Auth
@@ -58,6 +62,12 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
+<MudOverlay Visible="@BlockingLoadingService.IsLoading" DarkBackground="true" ZIndex="9999">
+    <MudStack AlignItems="AlignItems.Center" Spacing="4">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large"/>
+        <MudText Typo="Typo.h5" Style="color: white;">@BlockingLoadingService.LoadingText</MudText>
+    </MudStack>
+</MudOverlay>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -70,7 +80,7 @@
     private MudTheme _theme = new();
     private Guid? _userId;
 
-    [CascadingParameter] private Task<AuthenticationState> AuthTask { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState> AuthTask { get; set; } = null!;
 
     private void DrawerToggle()
     {
@@ -79,13 +89,20 @@
     
     protected override async Task OnInitializedAsync()
     {
-        LoadingService.OnLoadingChanged += StateHasChanged;
+        LoadingService.OnLoadingChanged += OnLoadingChanged;
+        BlockingLoadingService.OnLoadingChanged += OnLoadingChanged;
         _theme = Theme.Create(ThemeSettings.Value);
         _userId = await Auth.GetUserIdAsync();
     }
     
     public void Dispose()
     {
-        LoadingService.OnLoadingChanged -= StateHasChanged;
+        LoadingService.OnLoadingChanged -= OnLoadingChanged;
+        BlockingLoadingService.OnLoadingChanged -= OnLoadingChanged;
+    }
+    
+    private void OnLoadingChanged()
+    {
+        InvokeAsync(StateHasChanged);
     }
 }
