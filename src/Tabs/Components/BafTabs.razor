@@ -9,7 +9,8 @@
 
 <MudTabs ActivePanelIndexChanged="OnTabChanged"
          PanelClass="pa-4"
-         Border="true">
+         Border="true"
+         MinimumTabWidth="@MinimumTabWidth">
     @foreach (var tab in _tabs)
     {
         <MudTabPanel Text="@tab.Title" BadgeData="@tab.BadgeData" BadgeColor="@tab.BadgeColor">
@@ -20,6 +21,7 @@
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string MinimumTabWidth { get; set; } = "160px";
     
     private List<TabInfo> _tabs = [];
     private int _activeTabIndex = 0;
