@@ -7,7 +7,9 @@
 <MudDialog>
     <DialogContent>
         <MudText Typo="Typo.body1">
-            @ContentText 
+            <MudText>
+                @((MarkupString)ContentText)
+            </MudText>
         </MudText>
     </DialogContent>
     <DialogActions>

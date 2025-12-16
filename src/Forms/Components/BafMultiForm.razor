@@ -1,6 +1,7 @@
 ﻿@typeparam T
 
 @using Avolutions.Baf.Blazor.Forms.Services
+@using Avolutions.Baf.Core.Entity.Exceptions
 @using Avolutions.Baf.Core.Resources
 @using KellermanSoftware.CompareNetObjects
 @using Mapster
@@ -11,9 +12,31 @@
 @inject ConfirmLeaveDialogService ConfirmLeaveDialogService
 @inject IStringLocalizer<SharedResources> L
 
-<NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync"/>
+<NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync" ConfirmExternalNavigation="true"/>
+
+@if (ShowButtonsOnTop)
+{
+    <MudStack Row Spacing="5" Class="mt-4" Justify="Justify.FlexEnd">
+        <MudButton
+            Color="Color.Default"
+            OnClick="@Cancel"
+            Variant="Variant.Filled">
+            @L["Button.Cancel"]
+        </MudButton>
+        <MudButton 
+            Color="Color.Primary"
+            OnClick="@(async () => await Submit())"
+            Variant="Variant.Filled">
+            @L["Button.Save"]
+        </MudButton>
+    </MudStack>
+}
 
 <MudForm @ref="_form">
+    @if (HeaderContent != null)
+    {
+        @HeaderContent
+    }
     @foreach (var model in Models)
     {
         <FormComponent Model="model" IsSubForm="true">
@@ -49,6 +72,8 @@
 
 @code {
     [Parameter, EditorRequired] public required List<T> Models { get; set; }
+    [Parameter] public bool ShowButtonsOnTop { get; set; }
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
     [Parameter, EditorRequired] public required RenderFragment<T> ChildContent { get; set; }
 
     [Parameter] public EventCallback OnSubmit { get; set; }
@@ -96,6 +121,13 @@
             {
                 _canNavigate = true;
                 await OnSubmit.InvokeAsync();
+            }
+            catch (EntityValidationException ex)
+            {
+                foreach (var failure in ex.Failures)
+                {
+                    _errors.Add(failure.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {
