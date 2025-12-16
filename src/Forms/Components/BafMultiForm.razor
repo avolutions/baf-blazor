@@ -11,7 +11,7 @@
 @inject ConfirmLeaveDialogService ConfirmLeaveDialogService
 @inject IStringLocalizer<SharedResources> L
 
-<NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync"/>
+<NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync" ConfirmExternalNavigation="true"/>
 
 <MudForm @ref="_form">
     @foreach (var model in Models)

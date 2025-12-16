@@ -21,7 +21,7 @@
 
 @if (!IsSubForm)
 {
-    <NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync"/>
+    <NavigationLock OnBeforeInternalNavigation="ConfirmLeaveAsync" ConfirmExternalNavigation="true"/>
 }
 
 <MudForm Model="Model" @ref="@_form" Validation="@FluentValidatorHelper.CreateValidateValue(_validator)">
