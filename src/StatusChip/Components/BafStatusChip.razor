@@ -1,0 +1,25 @@
+﻿@typeparam T where T : struct, Enum
+
+@using Avolutions.Baf.Blazor.StatusChip.Models
+@using Avolutions.Baf.Blazor.StatusChip.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<StatusChipResources> L
+
+@{
+    var data = Resolver(Status) ?? new BafStatusChipData(Color.Default, L["UnkownStatus"], Icons.Material.Filled.Help);
+}
+<MudChip T="string"
+         Color="@data.Color"
+         Variant="Variant.Filled"
+         Size="Size.Small"
+         Label="true"
+         Icon="@data.Icon">
+    @data.Label
+</MudChip>
+
+@code {
+    [Parameter] public required T Status { get; set; }
+    [Parameter] public required Func<T, BafStatusChipData?> Resolver { get; set; }
+}
