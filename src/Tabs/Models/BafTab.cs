@@ -31,5 +31,10 @@ public abstract class BafTab : ComponentBase, IBafTab
     public virtual Task OnActivatedAsync()
     {
         return Task.CompletedTask;
+    }    
+    
+    protected void NotifyParentStateChanged()
+    {
+        Parent?.NotifyStateChanged();
     }
 }

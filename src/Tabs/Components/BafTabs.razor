@@ -94,5 +94,10 @@
     public void Dispose()
     {
         _initSemaphore.Dispose();
+    }   
+    
+    internal void NotifyStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
     }
 }
