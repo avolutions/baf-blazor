@@ -1,0 +1,36 @@
+﻿@using Avolutions.Baf.Blazor.StatusChip.Models
+@using MudBlazor
+
+<BafStatusChip T="CountStatus"
+               Status="_status"
+               Resolver="ResolveStatus" />
+
+@code {
+    [Parameter] public int Current { get; set; }
+    [Parameter] public int Total { get; set; }
+
+    private CountStatus _status;
+
+    protected override void OnParametersSet()
+    {
+        _status = new CountStatus(Current, Total);
+    }
+
+    private static BafStatusChipData ResolveStatus(CountStatus status)
+    {
+        var label = $"{status.Current}/{status.Total}";
+        
+        var color = (status.Total, status.Current) switch
+        {
+            (0, _) => Color.Default,
+            (_, 0) => Color.Error,
+            _ when status.Current == status.Total => Color.Success,
+            _ when status.Current < status.Total => Color.Warning,
+            _ => Color.Default
+        };
+
+        return new BafStatusChipData(color, label);
+    }
+
+    private readonly record struct CountStatus(int Current, int Total);
+}

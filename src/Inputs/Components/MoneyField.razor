@@ -11,6 +11,7 @@
     Format="F2"
     Immediate="@Immediate"
     Label="@Label"
+    ReadOnly="@ReadOnly"
     Required="@Required"
     Style="@Style"
     Value="Value"
@@ -23,6 +24,7 @@
     [Parameter] public Expression<Func<decimal>>? For { get; set; }
     [Parameter] public bool Immediate { get; set; }
     [Parameter] public string? Label { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public bool Required { get; set; }
     [Parameter] public string? Style { get; set; }
     [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
