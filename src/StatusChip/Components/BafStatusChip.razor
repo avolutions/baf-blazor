@@ -13,7 +13,7 @@
 <MudChip T="string"
          Color="@data.Color"
          Variant="Variant.Filled"
-         Size="Size.Small"
+         Size="Size"
          Label="true"
          Icon="@data.Icon">
     @data.Label
@@ -22,4 +22,5 @@
 @code {
     [Parameter] public required T Status { get; set; }
     [Parameter] public required Func<T, BafStatusChipData?> Resolver { get; set; }
+    [Parameter] public required Size Size { get; set; } = Size.Small;
 }
