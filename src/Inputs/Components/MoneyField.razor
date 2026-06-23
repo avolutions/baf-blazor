@@ -2,6 +2,7 @@
 @using MudBlazor
 
 <MudTextField
+    @ref="_field"
     T="decimal"
     Adornment="Adornment.End"
     AdornmentIcon="@Icons.Material.Filled.EuroSymbol"
@@ -34,10 +35,28 @@
     // extra callback for consumers
     [Parameter] public EventCallback<decimal> OnChanged { get; set; }
     
+    private MudTextField<decimal> _field = null!;
+    
+    private async Task SelectAllAsync()
+    {
+        if (Disabled || ReadOnly)
+        {
+            return;
+        }
+
+        await _field.SelectAsync();
+    }
+    
     private async Task OnValueChanged(decimal value)
     {
         Value = value;
         await ValueChanged.InvokeAsync(value);
         await OnChanged.InvokeAsync(value);
+    }
+    
+    public async Task FocusAsync()
+    {
+        await _field.FocusAsync();
+        await _field.SelectAsync();
     }
 }
