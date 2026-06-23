@@ -12,7 +12,7 @@ public class FormDialogService
     {
         BackdropClick = false,
         CloseButton = false,
-        CloseOnEscapeKey = false
+        CloseOnEscapeKey = false,
     };
     
     public FormDialogService(IDialogService dialogService)
@@ -24,7 +24,8 @@ public class FormDialogService
         string title,
         T model,
         Type formComponentType,
-        DialogParameters? additionalParameters = null)
+        DialogParameters? additionalParameters = null,
+        DefaultFocus defaultFocus = DefaultFocus.FirstChild)
     {
         // Clone the model to avoid modifying the original instance
         var localConfig = new TypeAdapterConfig();
@@ -39,7 +40,8 @@ public class FormDialogService
         {
             ["Model"] = clonedModel,
             ["FormComponentType"] = formComponentType,
-            ["AdditionalParameters"] = additionalParameters
+            ["AdditionalParameters"] = additionalParameters,
+            ["DefaultFocus"] = defaultFocus
         };
         
         var dialog = await _dialogService.ShowAsync<FormDialog<T>>(title, parameters, _options);
