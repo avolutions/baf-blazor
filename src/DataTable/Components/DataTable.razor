@@ -48,7 +48,8 @@
                             @foreach (var action in RowActions)
                             {
                                 <MudTooltip Text="@action.GetText(context.Item)"
-                                            Disabled="@(!action.IsVisible(context.Item))">
+                                            Disabled="@(!action.IsVisible(context.Item))"
+                                            ShowOnFocus="false">
                                     <MudIconButton Class="@(!action.IsVisible(context.Item) ? "invisible" : "")"
                                                    Color="@action.GetColor(context.Item)"
                                                    Disabled="@action.IsDisabled(context.Item)"

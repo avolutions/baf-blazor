@@ -6,7 +6,7 @@
 
 @inject IStringLocalizer<SharedResources> L
 
-<MudDialog ContentStyle="width: 500px" DefaultFocus="DefaultFocus.FirstChild">
+<MudDialog ContentStyle="width: 500px" DefaultFocus="DefaultFocus">
     <DialogContent>
         <FormComponent T="T"
                        Model="Model"
@@ -27,6 +27,7 @@
     [Parameter, EditorRequired] public required T Model { get; set; }
     [Parameter, EditorRequired] public required Type FormComponentType { get; set; }
     [Parameter, EditorRequired] public required DialogParameters? AdditionalParameters { get; set; }
+    [Parameter, EditorRequired] public required DefaultFocus DefaultFocus { get; set; }
     
     private FormComponent<T> _form = null!;
     private Dictionary<string, object?> _formParameters = new();
