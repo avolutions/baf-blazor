@@ -1,0 +1,15 @@
+﻿@using MudBlazor
+
+<MudIcon Icon="@_icon" Color="@_color" Size="@Size"/>
+
+@code {
+    [Parameter] public string? Extension { get; set; }
+    [Parameter] public bool IsFolder { get; set; }
+    [Parameter] public Size Size { get; set; } = Size.Medium;
+
+    private string _icon = string.Empty;
+    private Color _color;
+
+    protected override void OnParametersSet()
+        => (_icon, _color) = IsFolder ? FileTypeIcons.Folder : FileTypeIcons.Get(Extension);
+}
