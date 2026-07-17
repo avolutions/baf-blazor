@@ -1,4 +1,5 @@
 ﻿using Avolutions.Baf.Blazor.Forms.Components;
+using FluentValidation;
 using Mapster;
 using MudBlazor;
 
@@ -24,6 +25,7 @@ public class FormDialogService
         string title,
         T model,
         Type formComponentType,
+        IValidator<T>? validator = null,
         DialogParameters? additionalParameters = null,
         DefaultFocus defaultFocus = DefaultFocus.FirstChild)
     {
@@ -40,6 +42,7 @@ public class FormDialogService
         {
             ["Model"] = clonedModel,
             ["FormComponentType"] = formComponentType,
+            ["Validator"] = validator,
             ["AdditionalParameters"] = additionalParameters,
             ["DefaultFocus"] = defaultFocus
         };

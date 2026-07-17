@@ -1,6 +1,7 @@
 ﻿@typeparam T
 
 @using Avolutions.Baf.Core.Resources
+@using FluentValidation
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 
@@ -11,6 +12,7 @@
         <FormComponent T="T"
                        Model="Model"
                        @ref="_form"
+                       Validator="Validator"
                        ShowButtons="false">
             <DynamicComponent Type="FormComponentType" Parameters="_formParameters" />
         </FormComponent>
@@ -28,6 +30,7 @@
     [Parameter, EditorRequired] public required Type FormComponentType { get; set; }
     [Parameter, EditorRequired] public required DialogParameters? AdditionalParameters { get; set; }
     [Parameter, EditorRequired] public required DefaultFocus DefaultFocus { get; set; }
+    [Parameter] public IValidator<T>? Validator { get; set; }
     
     private FormComponent<T> _form = null!;
     private Dictionary<string, object?> _formParameters = new();
