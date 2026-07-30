@@ -1,0 +1,99 @@
+﻿@typeparam T where T : class, ILookup, IEntity
+@typeparam TValue
+@attribute [CascadingTypeParameter(nameof(T))]
+
+@using System.Linq.Expressions
+@using Avolutions.Baf.Core.Entity.Abstractions
+@using Avolutions.Baf.Core.Lookups.Abstractions
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject ILookupCache<T> LookupCache
+@inject IStringLocalizer<SharedResources> LShared
+
+<MudSelect T="TValue"
+           Class="@Class"
+           Clearable="true"
+           Disabled="@Disabled"
+           For="@For"
+           Label="@Label"
+           Required="@Required"
+           RequiredError="@(RequiredError ?? LShared["Validation.Required", Label ?? ""])"
+           Style="@Style"
+           ToStringFunc="@GetDisplayText"
+           Value="@Value"
+           ValueChanged="OnValueChanged"
+           Variant="@Variant">
+    @foreach (var lookupItem in _lookupItems)
+    {
+        <MudSelectItem T="TValue" Value="@((TValue)(object)lookupItem.Id)">
+            @lookupItem.Value
+        </MudSelectItem>
+    }
+</MudSelect>
+
+@code {
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public Func<T, bool>? Filter { get; set; }
+    [Parameter] public Expression<Func<TValue>>? For { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public bool Required { get; set; }
+    [Parameter] public string? RequiredError { get; set; }
+    [Parameter] public bool SetDefaultValue { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
+    
+    // extra callback for consumers
+    [Parameter] public EventCallback<TValue?> OnChanged { get; set; }
+    
+    private List<T> _lookupItems = [];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var lookupItems = await LookupCache.GetAllAsync();
+
+        _lookupItems = lookupItems
+            .Where(item => Filter is null || Filter(item))
+            .OrderBy(item => item.Value)
+            .ToList();
+
+        if (!SetDefaultValue)
+        {
+            return;
+        }
+
+        if (Value is Guid currentId && currentId != Guid.Empty)
+        {
+            return;
+        }
+
+        var defaultId = await LookupCache.GetDefaultIdAsync();
+        
+        Value = (TValue)(object)defaultId;
+        await ValueChanged.InvokeAsync(Value);
+    }
+    
+    private string GetDisplayText(TValue? value)
+    {
+        if (value is not Guid id || id == Guid.Empty)
+        {
+            return string.Empty;
+        }
+
+        var item = _lookupItems.FirstOrDefault(lookupItem => lookupItem.Id == id);
+
+        return item is null ? string.Empty : item.Value;
+    }
+    
+    private async Task OnValueChanged(TValue? value)
+    {
+        Value = value;
+        
+        await ValueChanged.InvokeAsync(value);
+        await OnChanged.InvokeAsync(value);
+    }
+}
