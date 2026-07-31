@@ -91,6 +91,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>StatusChipResources.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="LockStatus\Resources\LockStatusResources.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LockStatusResources.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -158,6 +162,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>StatusChipResources.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="LockStatus\Resources\LockStatusResources.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LockStatusResources.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
