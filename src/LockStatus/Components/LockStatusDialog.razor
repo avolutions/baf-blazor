@@ -1,0 +1,71 @@
+﻿@using Avolutions.Baf.Blazor.LockStatus.Models
+@using Avolutions.Baf.Blazor.LockStatus.Resources
+@using Avolutions.Baf.Core.Entity.Abstractions
+@using Avolutions.Baf.Core.Entity.Models
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<LockStatusResources> L
+@inject IStringLocalizer<SharedResources> LShared
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row="true">
+            @{
+                var icon = LockStatusIcons.Get(Level);
+            }
+            <MudIcon Icon="@icon.Icon" Color="@icon.Color" />
+            <MudText Typo="Typo.h6">
+                @L["LockStatusDialog.Title", L[$"LockStatus.{Level.ToString()}"]]
+            </MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_form">
+            <MudTextField @bind-Value="_message"
+                          Label="@L["Field.Message"]"
+                          Lines="3"
+                          MaxLength="500"
+                          Counter="500"
+                          Immediate="true"
+                          Required="true"
+                          RequiredError="@LShared["Validation.Required", L["Field.Message"]]"
+                          Variant="Variant.Outlined"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" OnClick="Cancel">@LShared["Button.Cancel"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Confirm">@LShared["Button.Save"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+    
+    [Parameter] public required ILockable Entity { get; set; }
+    [Parameter] public required EntityLockLevel Level { get; set; }
+    
+    private MudForm _form = null!;
+    
+    private string? _message;
+
+    protected override void OnParametersSet()
+    {
+        _message = Entity.LockStatus.Message;
+    }
+    
+    private async Task Confirm()
+    {
+        await _form.Validate();
+
+        if (!_form.IsValid)
+        {
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(_message?.Trim()));
+    }
+    
+    private void Cancel() => MudDialog.Cancel();
+}
