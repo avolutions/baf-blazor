@@ -42,4 +42,23 @@ public class LockStatusDialogService
         
         return await dialog.Result;
     }
+    
+    public async Task ShowBlockedAsync(string entityName, EntityLockStatus status)
+    {
+        var parameters = new DialogParameters<LockStatusBlockedDialog>
+        {
+            { x => x.EntityName, entityName },
+            { x => x.Status, status }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await _dialogService.ShowAsync<LockStatusBlockedDialog>(null, parameters, options);
+
+        await dialog.Result;
+    }
 }

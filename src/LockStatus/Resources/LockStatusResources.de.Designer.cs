@@ -105,6 +105,24 @@ namespace Avolutions.Baf.Blazor.LockStatus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot; ist aus folgendem Grund gesperrt und kann nicht verwendet werden:.
+        /// </summary>
+        internal static string LockStatusBlockedDialog_Text {
+            get {
+                return ResourceManager.GetString("LockStatusBlockedDialog.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Datensatz gesperrt.
+        /// </summary>
+        internal static string LockStatusBlockedDialog_Title {
+            get {
+                return ResourceManager.GetString("LockStatusBlockedDialog.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; Zustand setzen.
         /// </summary>
         internal static string LockStatusDialog_Title {

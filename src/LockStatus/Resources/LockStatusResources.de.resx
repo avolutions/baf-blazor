@@ -39,4 +39,10 @@
     <data name="SetLockStatus" xml:space="preserve">
         <value>Zustand setzen</value>
     </data>
+    <data name="LockStatusBlockedDialog.Title" xml:space="preserve">
+        <value>Datensatz gesperrt</value>
+    </data>
+    <data name="LockStatusBlockedDialog.Text" xml:space="preserve">
+        <value>"{0}" ist aus folgendem Grund gesperrt und kann nicht verwendet werden:</value>
+    </data>
 </root>
