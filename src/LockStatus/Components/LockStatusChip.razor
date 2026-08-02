@@ -1,0 +1,41 @@
+﻿@using Avolutions.Baf.Blazor.LockStatus.Models
+@using Avolutions.Baf.Blazor.LockStatus.Resources
+@using Avolutions.Baf.Blazor.StatusChip.Components
+@using Avolutions.Baf.Blazor.StatusChip.Models
+@using Avolutions.Baf.Core.Entity.Models
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<LockStatusResources> L
+
+@if (Status.Level != EntityLockLevel.None)
+{
+    <MudTooltip Text="@Status.Message" Arrow="true">
+        @if (IconOnly)
+        {
+            var icon = LockStatusIcons.Get(Status.Level);
+            <MudIcon Icon="@icon.Icon" Color="@icon.Color"/>
+        }
+        else
+        {
+            <BafStatusChip T="EntityLockLevel"
+                           Size="Size"
+                           Status="Status.Level"
+                           Resolver="Resolve"/>
+        }
+    </MudTooltip>
+}
+
+@code {
+    [Parameter] public required EntityLockStatus Status { get; set; }
+    [Parameter] public bool IconOnly { get; set; } = false;
+    [Parameter] public Size Size { get; set; } = Size.Small;
+
+    private BafStatusChipData? Resolve(EntityLockLevel level) => level switch
+    {
+        EntityLockLevel.Info => new BafStatusChipData(LockStatusIcons.Info.Color, L["LockStatus.Info"], LockStatusIcons.Info.Icon),
+        EntityLockLevel.Warning => new BafStatusChipData(LockStatusIcons.Warning.Color, L["LockStatus.Warning"], LockStatusIcons.Warning.Icon),
+        EntityLockLevel.Block => new BafStatusChipData(LockStatusIcons.Block.Color, L["LockStatus.Block"], LockStatusIcons.Block.Icon),
+        _ => null
+    };
+}

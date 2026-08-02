@@ -1,0 +1,45 @@
+﻿@using Avolutions.Baf.Blazor.LockStatus.Models
+@using Avolutions.Baf.Blazor.LockStatus.Resources
+@using Avolutions.Baf.Core.Entity.Models
+@using Avolutions.Baf.Core.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject IStringLocalizer<LockStatusResources> L
+@inject IStringLocalizer<SharedResources> LShared
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            @{
+                var icon = LockStatusIcons.Get(Status.Level);
+            }
+            <MudIcon Icon="@icon.Icon" Color="@icon.Color" />
+            <MudText Typo="Typo.h6">
+                @L["LockStatusBlockedDialog.Title"]
+            </MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-3">
+            @L["LockStatusBlockedDialog.Text", EntityName]
+        </MudText>
+        <MudAlert Severity="Severity.Error" Dense="true">
+            @Status.Message
+        </MudAlert>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Close">
+            @LShared["Button.Ok"]
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public required string EntityName { get; set; }
+    [Parameter] public required EntityLockStatus Status { get; set; }
+
+    private void Close() => MudDialog.Close();
+}
