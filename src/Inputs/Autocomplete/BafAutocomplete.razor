@@ -2,29 +2,53 @@
 @attribute [CascadingTypeParameter(nameof(T))]
 
 @using System.Linq.Expressions
+@using Avolutions.Baf.Blazor.LockStatus.Components
+@using Avolutions.Baf.Blazor.LockStatus.Services
 @using Avolutions.Baf.Core.Entity.Abstractions
+@using Avolutions.Baf.Core.Entity.Models
 @using Avolutions.Baf.Core.Resources
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 
 @inject IAutocompleteProvider<T> AutocompleteProvider
+@inject LockStatusDialogService LockStatusDialogService
+
 @inject IStringLocalizer<SharedResources> LShared
 
-<MudAutocomplete T="T"
-                 Class="@Class"
-                 Clearable="true"
-                 Disabled="@Disabled"
-                 For="@For"
-                 Label="@Label"
-                 SearchFunc="AutocompleteProvider.SearchAsync"
-                 ResetValueOnEmptyText="true"
-                 Required="@Required"
-                 RequiredError="@(RequiredError ?? LShared["Validation.Required", Label ?? ""])"
-                 Style="@Style"
-                 ToStringFunc="AutocompleteProvider.ToString"
-                 Value="Value"
-                 ValueChanged="OnValueChanged"
-                 Variant="@Variant"/>
+<MudStack Spacing="1">
+    <MudAutocomplete T="T"
+                     Class="@Class"
+                     Clearable="true"
+                     Disabled="@Disabled"
+                     For="@For"
+                     Label="@Label"
+                     SearchFunc="AutocompleteProvider.SearchAsync"
+                     ResetValueOnEmptyText="true"
+                     Required="@Required"
+                     RequiredError="@(RequiredError ?? LShared["Validation.Required", Label ?? ""])"
+                     Style="@Style"
+                     ToStringFunc="AutocompleteProvider.ToString"
+                     Value="Value"
+                     ValueChanged="OnValueChanged"
+                     Variant="@Variant">
+        <ItemTemplate Context="item">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                <MudText>@AutocompleteProvider.ToString(item)</MudText>
+                @if (item is ILockable lockable && lockable.LockStatus.IsSet)
+                {
+                    <LockStatusChip Status="@lockable.LockStatus" IconOnly="true"/>
+                }
+            </MudStack>
+        </ItemTemplate>
+    </MudAutocomplete>
+
+    @if (HandleLockStatus && _alertStatus is not null)
+    {
+        <MudAlert Severity="@ToSeverity(_alertStatus.Level)" Dense="true">
+            @_alertStatus.Message
+        </MudAlert>
+    }
+</MudStack>
 
 @code {
     [Parameter] public string? Class { get; set; }
@@ -39,14 +63,63 @@
     [Parameter] public required T Value { get; set; }
     [Parameter] public EventCallback<T> ValueChanged { get; set; }
     [Parameter] public Expression<Func<T>>? ValueExpression { get; set; }
+
+    [Parameter] public bool HandleLockStatus { get; set; } = true;
     
     // extra callback for consumers
     [Parameter] public EventCallback<T?> OnChanged { get; set; }
     
+    private EntityLockStatus? _alertStatus;
+
+    protected override void OnParametersSet()
+    {
+        if (!HandleLockStatus)
+        {
+            _alertStatus = null;
+            return;
+        }
+
+        _alertStatus = GetAlertStatus(Value);
+    }
+    
     private async Task OnValueChanged(T value)
     {
+        if (HandleLockStatus && value is ILockable lockable && lockable.LockStatus.IsBlocked)
+        {
+            await LockStatusDialogService.ShowBlockedAsync(
+                AutocompleteProvider.ToString(value),
+                lockable.LockStatus);
+
+            return;
+        }
+        
+        _alertStatus = HandleLockStatus ? GetAlertStatus(value) : null;
+        
         Value = value;
         await ValueChanged.InvokeAsync(value);
         await OnChanged.InvokeAsync(value);
     }
+    
+    private static EntityLockStatus? GetAlertStatus(T? value)
+    {
+        if (value is not ILockable lockable)
+        {
+            return null;
+        }
+
+        if (!lockable.LockStatus.IsSet || lockable.LockStatus.IsBlocked)
+        {
+            return null;
+        }
+
+        return lockable.LockStatus;
+    }
+
+    private static Severity ToSeverity(EntityLockLevel level) => level switch
+    {
+        EntityLockLevel.Info => Severity.Info,
+        EntityLockLevel.Warning => Severity.Warning,
+        EntityLockLevel.Block => Severity.Error,
+        _ => Severity.Normal
+    };
 }
