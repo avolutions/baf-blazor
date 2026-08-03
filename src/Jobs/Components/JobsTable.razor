@@ -1,0 +1,164 @@
+﻿@using System.Text.Json
+@using Avolutions.Baf.Blazor.Account.Components
+@using Avolutions.Baf.Blazor.DataTable.Components
+@using Avolutions.Baf.Blazor.DataTable.Models
+@using Avolutions.Baf.Blazor.Jobs.Models
+@using Avolutions.Baf.Blazor.Jobs.Services
+@using Avolutions.Baf.Blazor.Snackbar.Services
+@using Avolutions.Baf.Core.Jobs.Abstractions
+@using Avolutions.Baf.Core.Jobs.Models
+@using Avolutions.Baf.Core.Jobs.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@inject ExecuteJobDialogService ExecuteJobDialogService
+@inject SnackbarNotificationService SnackbarNotificationService
+
+@inject IStringLocalizer<JobResources> L
+
+<DataTable T="IJob"
+           Items="Items"
+           Loading="Loading"
+           RowActions="RowActions"
+           ShowPaging="false">
+    <Columns>
+        <HierarchyColumn T="IJob" />
+        <PropertyColumn Property="x => x.Name"
+                        Title="@L["Field.Name"]"
+                        InitialDirection="SortDirection.Ascending" />
+        <PropertyColumn Property="x => x.Description"
+                        Title="@L["Field.Description"]"
+                        Sortable="false" />
+        @if (ShowSchedule)
+        {
+            <TemplateColumn Title="@L["Field.Schedule"]" Sortable="false">
+                <CellTemplate>
+                    @if (Schedules.TryGetValue(context.Item.Key, out var schedule))
+                    {
+                        @schedule.Description
+                    }
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="@L["Field.NextRun"]" Sortable="false">
+                <CellTemplate>
+                    @if (Schedules.TryGetValue(context.Item.Key, out var schedule) && schedule.NextRun is not null)
+                    {
+                        @schedule.NextRun.Value.LocalDateTime
+                    }
+                </CellTemplate>
+            </TemplateColumn>
+        }
+        <TemplateColumn Title="@L["LatestStarted"]">
+            <CellTemplate>
+                @if (Latest.TryGetValue(context.Item.Key, out var latest) && latest is not null)
+                {
+                    @latest.StartedAt?.LocalDateTime
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="@L["LatestStatus"]">
+            <CellTemplate>
+                @if (Latest.TryGetValue(context.Item.Key, out var latest) && latest is not null)
+                {
+                    <JobStatusChip Status="@latest.Status" />
+                }
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <ChildRowContent>
+        @{
+            Runs.TryGetValue(context.Item.Key, out var runs);
+        }
+        @if (runs is null)
+        {
+            <MudProgressCircular Indeterminate="true" />
+        }
+        else if (runs.Count == 0)
+        {
+            <MudText Typo="Typo.body1" Align="Align.Center">@L["NoRuns"]</MudText>
+        }
+        else
+        {
+            <MudSimpleTable Dense="true">
+                <thead>
+                <tr>
+                    <th style="white-space:nowrap;">@L["Field.StartedAt"]</th>
+                    <th style="white-space:nowrap;">@L["Field.FinishedAt"]</th>
+                    <th>@L["Field.Status"]</th>
+                    <th style="white-space:nowrap;">@L["Field.TriggeredBy"]</th>
+                    <th>@L["Field.ParamJson"]</th>
+                    <th>@L["Message"]</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var jobRun in runs.OrderByDescending(r => r.QueuedAt))
+                {
+                    <tr>
+                        <td style="white-space:nowrap;">@jobRun.StartedAt?.LocalDateTime</td>
+                        <td style="white-space:nowrap;">@jobRun.FinishedAt?.LocalDateTime</td>
+                        <td><JobStatusChip Status="@jobRun.Status" /></td>
+                        <td><UserAvatar UserId="@jobRun.TriggeredBy" Size="Size.Small" WithName="true" Typo="Typo.body2" /></td>
+                        <td>@jobRun.ParamJson</td>
+                        <td>@GetRunMessage(jobRun)</td>
+                    </tr>
+                }
+                </tbody>
+            </MudSimpleTable>
+        }
+    </ChildRowContent>
+</DataTable>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<IJob> Items { get; set; } = [];
+    [Parameter] public Dictionary<string, List<JobRun>> Runs { get; set; } = new();
+    [Parameter] public Dictionary<string, LatestRunSummary?> Latest { get; set; } = new();
+    [Parameter] public Dictionary<string, JobScheduleInfo> Schedules { get; set; } = new();
+    [Parameter] public bool ShowSchedule { get; set; }
+    [Parameter] public bool Loading { get; set; }
+    
+    [Parameter] public EventCallback<IJob> OnExecuted { get; set; }
+
+    public List<RowAction<IJob>> RowActions =>
+    [
+        new()
+        {
+            Text = L["Execute"],
+            Icon = Icons.Material.Filled.PlayCircle,
+            Color = Color.Primary,
+            Size = Size.Large,
+            OnClick = async item => await Execute(item),
+            VisibleFunc = item => item.IsManuallyTriggerable,
+        }
+    ];
+
+    private static string GetRunMessage(JobRun r)
+    {
+        if (!string.IsNullOrWhiteSpace(r.ResultJson))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(r.ResultJson);
+                if (doc.RootElement.TryGetProperty("Message", out var msg))
+                {
+                    return msg.GetString() ?? r.ResultJson!;
+                }
+            }
+            catch { /* ignore parse errors */ }
+
+            return r.ResultJson!;
+        }
+
+        return r.Error ?? string.Empty;
+    }
+    
+    private async Task Execute(IJob job)
+    {
+        var result = await ExecuteJobDialogService.ShowAsync(job);
+
+        if (result is { Canceled: false })
+        {
+            SnackbarNotificationService.ShowSuccess(L["ExecutedSuccessfully"]);
+            await OnExecuted.InvokeAsync(job);
+        }
+    }
+}
