@@ -126,8 +126,7 @@
             Icon = Icons.Material.Filled.PlayCircle,
             Color = Color.Primary,
             Size = Size.Large,
-            OnClick = async item => await Execute(item),
-            VisibleFunc = item => item.IsManuallyTriggerable,
+            OnClick = async item => await Execute(item),VisibleFunc = item => !Schedules.TryGetValue(item.Key, out var schedule) || schedule.AllowManualTrigger
         }
     ];
 
