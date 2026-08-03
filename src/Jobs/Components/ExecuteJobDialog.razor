@@ -63,15 +63,12 @@
     {
         var json  = JsonSerializer.Serialize(_model, Job.ParamType);
         var typed = JsonSerializer.Deserialize(json, Job.ParamType)!;
-        
-        var methodInfo = typeof(IJobService).GetMethod(nameof(IJobService.EnqueueAsync))!;
-        var generic = methodInfo.MakeGenericMethod(Job.ParamType);
+
         var userId = await Auth.GetUserIdAsync();
-        var task = (Task)generic.Invoke(JobService, [Job.Key, typed, userId, CancellationToken.None])!;
-        await task;
-        
+        await JobService.EnqueueAsync(Job.Key, typed, userId, CancellationToken.None);
+
         MudDialog.Close(DialogResult.Ok(true));
-    } 
+    }
     
     private void Cancel() => MudDialog.Cancel();
 }
