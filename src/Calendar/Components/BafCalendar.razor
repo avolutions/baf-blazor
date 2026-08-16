@@ -1,0 +1,73 @@
+﻿@using Avolutions.Baf.Blazor.Calendar.Models
+@using Avolutions.Baf.Core.Colors.Models
+@using Heron.MudCalendar
+@using MudBlazor
+
+<div class="baf-calendar">
+    <MudCalendar T="BafCalendarItem"
+                 Items="@Items"
+                 View="@View"
+                 ViewChanged="@ViewChanged"
+                 CurrentDay="@CurrentDay"
+                 CurrentDayChanged="@CurrentDayChanged"
+                 ShowDay="@ShowDay"
+                 ShowWeek="@ShowWeek"
+                 ShowWorkWeek="@ShowWorkWeek"
+                 ShowMonth="@ShowMonth"
+                 DateRangeChanged="@DateRangeChanged"
+                 ItemClicked="@ItemClicked"
+                 CellClicked="@CellClicked">
+        <CellTemplate>
+            @if (ItemTemplate is not null)
+            {
+                @ItemTemplate(context)
+            }
+            else
+            {
+                <MudTooltip Text="@GetTooltip(context)">
+                    <MudElement HtmlTag="div" Class="ma-1 mt-2 pa-1 rounded" Style="@GetItemStyle(context)">
+                        <MudStack Row="true" Spacing="1">
+                            @if (!string.IsNullOrWhiteSpace(context.Icon))
+                            {
+                                <MudIcon Icon="@context.Icon" Size="Size.Small"/>
+                            }
+                            <MudText Typo="Typo.body2">@context.Text</MudText>
+                        </MudStack>
+                    </MudElement>
+                </MudTooltip>
+            }
+        </CellTemplate>
+    </MudCalendar>
+</div>
+
+@code {
+    [Parameter] public List<BafCalendarItem> Items { get; set; } = [];
+    [Parameter] public CalendarView View { get; set; } = CalendarView.Month;
+    [Parameter] public EventCallback<CalendarView> ViewChanged { get; set; }
+    [Parameter] public DateTime CurrentDay { get; set; } = DateTime.Today;
+    [Parameter] public EventCallback<DateTime> CurrentDayChanged { get; set; }
+    [Parameter] public EventCallback<DateRange> DateRangeChanged { get; set; }
+    [Parameter] public EventCallback<BafCalendarItem> ItemClicked { get; set; }
+    [Parameter] public EventCallback<DateTime> CellClicked { get; set; }
+    [Parameter] public bool ShowDay { get; set; } = true;
+    [Parameter] public bool ShowWeek { get; set; } = true;
+    [Parameter] public bool ShowWorkWeek { get; set; }
+    [Parameter] public bool ShowMonth { get; set; } = true;
+
+    [Parameter] public RenderFragment<BafCalendarItem>? ItemTemplate { get; set; }
+
+    private static string GetItemStyle(BafCalendarItem item)
+    {
+        return BafColor.FromBackground(item.ColorHex).ToStyle();
+    }
+
+    private static string GetTooltip(BafCalendarItem item)
+    {
+        if (string.IsNullOrWhiteSpace(item.Description))
+        {
+            return item.Text;
+        }
+
+        return $"{item.Text} - {item.Description}";
+    }
+}
