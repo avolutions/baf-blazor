@@ -54,6 +54,13 @@
         await ReloadDataAsync();
     }
 
+    private string GetGridStyle()
+    {
+        return $"grid-column: {Column} / span {ColumnSpan}; " +
+               $"grid-row: {Row} / span {RowSpan}; " +
+               $"align-self: start;";
+    }
+
     public async Task ReloadDataAsync()
     {
         if (LoadDataFunc is null) return;
@@ -91,11 +98,6 @@
             IsLoading = false;
             StateHasChanged();
         }
-    }
-
-    private string GetGridStyle()
-    {
-        return $"grid-column: {Column} / span {ColumnSpan}; grid-row: {Row} / span {RowSpan};";
     }
     
     public ValueTask DisposeAsync()
