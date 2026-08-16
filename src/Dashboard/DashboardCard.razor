@@ -10,9 +10,12 @@
             <MudText Typo="Typo.h6">@Title</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Refresh" 
-                           OnClick="@ReloadDataAsync"
-                           Disabled="@IsLoading" />
+            @if (LoadDataFunc is not null)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                               OnClick="@ReloadDataAsync"
+                               Disabled="@IsLoading"/>
+            }
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
@@ -23,6 +26,10 @@
         else if (HasError)
         {
             <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+        }
+        else if (LoadDataFunc is null)
+        {
+            @ChildContent?.Invoke(default!)
         }
         else if (Data is not null)
         {
