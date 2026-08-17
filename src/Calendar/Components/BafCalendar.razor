@@ -1,0 +1,108 @@
+﻿@using Avolutions.Baf.Blazor.Calendar.Models
+@using Avolutions.Baf.Core.Colors.Models
+@using Heron.MudCalendar
+@using MudBlazor
+
+<div class="baf-calendar">
+    <MudCalendar T="BafCalendarItem"
+                 Items="@Items"
+                 View="@View"
+                 ViewChanged="@ViewChanged"
+                 ShowDay="@ShowDay"
+                 ShowWeek="@ShowWeek"
+                 ShowWorkWeek="@ShowWorkWeek"
+                 ShowMonth="@ShowMonth"
+                 DateRangeChanged="@DateRangeChanged"
+                 ItemClicked="@ItemClicked"
+                 CellClicked="@CellClicked"
+                 MonthCellMinHeight="100">
+        <ToolbarContent>
+            @ToolbarContent
+        </ToolbarContent>
+        <CellTemplate>
+            @if (ItemTemplate is not null)
+            {
+                @ItemTemplate(context)
+            }
+            else
+            {
+                <MudTooltip Placement="Placement.Top" Arrow="true" Inline="false">
+                    <TooltipContent>
+                        <MudStack Spacing="1" Class="pa-1" Style="text-align: left;">
+                            <MudText Typo="Typo.subtitle2">@context.Text</MudText>
+
+                            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Outlined.Schedule" Size="Size.Small" />
+                                <MudText Typo="Typo.body2">@GetTimeRange(context)</MudText>
+                            </MudStack>
+
+                            @if (!string.IsNullOrWhiteSpace(context.Description))
+                            {
+                                <MudDivider />
+                                <MudText Typo="Typo.body2" Align="Align.Start">@context.Description</MudText>
+                            }
+                        </MudStack>
+                    </TooltipContent>
+                    <ChildContent>
+                        <MudElement HtmlTag="div" Class="ma-1 mt-1 pa-1 rounded baf-calendar-item" Style="@GetItemStyle(context)">
+                            <MudStack Row="true" Spacing="1">
+                                @if (context.Icon is not null)
+                                {
+                                    <MudIcon Icon="@context.Icon" Size="Size.Small" />
+                                }
+                                <MudText Typo="Typo.body2">@context.Text</MudText>
+                            </MudStack>
+                        </MudElement>
+                    </ChildContent>
+                </MudTooltip>
+            }
+        </CellTemplate>
+    </MudCalendar>
+</div>
+
+@code {
+    [Parameter] public List<BafCalendarItem> Items { get; set; } = [];
+    [Parameter] public CalendarView View { get; set; } = CalendarView.Month;
+    [Parameter] public EventCallback<CalendarView> ViewChanged { get; set; }
+    [Parameter] public EventCallback<DateRange> DateRangeChanged { get; set; }
+    [Parameter] public EventCallback<BafCalendarItem> ItemClicked { get; set; }
+    [Parameter] public EventCallback<DateTime> CellClicked { get; set; }
+    [Parameter] public bool ShowDay { get; set; } = true;
+    [Parameter] public bool ShowWeek { get; set; } = true;
+    [Parameter] public bool ShowWorkWeek { get; set; }
+    [Parameter] public bool ShowMonth { get; set; } = true;
+
+    [Parameter] public RenderFragment? ToolbarContent { get; set; }
+    [Parameter] public RenderFragment<BafCalendarItem>? ItemTemplate { get; set; }
+
+    private static string GetItemStyle(BafCalendarItem item)
+    {
+        return BafColor.FromBackground(item.ColorHex).ToStyle();
+    }
+
+    private static string GetTimeRange(BafCalendarItem item)
+    {
+        if (item.AllDay)
+        {
+            // End is rendered inclusive, so a single day event ends on the same date.
+            if (item.End is null || item.End.Value.Date == item.Start.Date)
+            {
+                return item.Start.ToString("d");
+            }
+
+            return $"{item.Start:d} - {item.End.Value:d}";
+        }
+
+        if (item.End is null)
+        {
+            return item.Start.ToString("g");
+        }
+
+        if (item.End.Value.Date == item.Start.Date)
+        {
+            return $"{item.Start:g} - {item.End.Value:t}";
+        }
+
+        return $"{item.Start:g} - {item.End.Value:g}";
+    }
+}

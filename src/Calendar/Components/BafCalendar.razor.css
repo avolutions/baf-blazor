@@ -1,0 +1,9 @@
+﻿::deep .baf-calendar-item {
+    overflow: hidden;
+}
+
+::deep .baf-calendar-item .mud-typography {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

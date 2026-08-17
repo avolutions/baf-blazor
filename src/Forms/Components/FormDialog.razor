@@ -1,9 +1,13 @@
 ﻿@typeparam T
 
+@using Avolutions.Baf.Blazor.Dialogs.Services
+@using Avolutions.Baf.Blazor.Forms.Models
 @using Avolutions.Baf.Core.Resources
 @using FluentValidation
 @using Microsoft.Extensions.Localization
 @using MudBlazor
+
+@inject DeleteDialogService DeleteDialogService
 
 @inject IStringLocalizer<SharedResources> L
 
@@ -19,8 +23,25 @@
     </DialogContent>
 
     <DialogActions>
-        <MudButton Variant="Variant.Text" OnClick="@Cancel">@L["Button.Cancel"]</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@Save">@L["Button.Save"]</MudButton>
+        <MudButton Class="@(ShowDeleteButton ? "mr-auto" : "")"
+                   OnClick="@Cancel"
+                   Variant="Variant.Text">
+            @L["Button.Cancel"]
+        </MudButton>
+        @if (ShowDeleteButton)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       StartIcon="@Icons.Material.Outlined.Delete"
+                       OnClick="@DeleteAsync">
+                @L["Button.Delete"]
+            </MudButton>
+        }
+        <MudButton Color="Color.Primary"
+                   OnClick="@SaveAsync"
+                   Variant="Variant.Filled">
+            @L["Button.Save"]
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -31,6 +52,7 @@
     [Parameter, EditorRequired] public required DialogParameters? AdditionalParameters { get; set; }
     [Parameter, EditorRequired] public required DefaultFocus DefaultFocus { get; set; }
     [Parameter] public IValidator<T>? Validator { get; set; }
+    [Parameter] public bool ShowDeleteButton { get; set; }
     
     private FormComponent<T> _form = null!;
     private Dictionary<string, object?> _formParameters = new();
@@ -51,12 +73,21 @@
         }
     }
     
-    private async Task Save()
+    private async Task SaveAsync()
     {
         await _form.ValidateAsync();
         if (_form.IsValid())
         {
-            MudDialog.Close(DialogResult.Ok(Model));
+            MudDialog.Close(DialogResult.Ok(FormDialogResult<T>.Saved(Model)));
+        }
+    }
+    
+    private async Task DeleteAsync()
+    {
+        var result = await DeleteDialogService.ShowAsync();
+        if (result is { Canceled: false })
+        {
+            MudDialog.Close(DialogResult.Ok(FormDialogResult<T>.Deleted(Model)));
         }
     }
     
