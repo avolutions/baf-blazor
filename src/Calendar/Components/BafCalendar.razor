@@ -26,11 +26,35 @@
             }
             else
             {
-                <MudElement HtmlTag="div"
-                            Class="ma-1 mt-1 pa-1 rounded"
-                            Style="@GetItemStyle(context)">
-                    <MudText Typo="Typo.body2">@context.Text</MudText>
-                </MudElement>
+                <MudTooltip Placement="Placement.Top" Arrow="true" Inline="false">
+                    <TooltipContent>
+                        <MudStack Spacing="1" Class="pa-1" Style="text-align: left;">
+                            <MudText Typo="Typo.subtitle2">@context.Text</MudText>
+
+                            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Outlined.Schedule" Size="Size.Small" />
+                                <MudText Typo="Typo.body2">@GetTimeRange(context)</MudText>
+                            </MudStack>
+
+                            @if (!string.IsNullOrWhiteSpace(context.Description))
+                            {
+                                <MudDivider />
+                                <MudText Typo="Typo.body2" Align="Align.Start">@context.Description</MudText>
+                            }
+                        </MudStack>
+                    </TooltipContent>
+                    <ChildContent>
+                        <MudElement HtmlTag="div" Class="ma-1 mt-1 pa-1 rounded baf-calendar-item" Style="@GetItemStyle(context)">
+                            <MudStack Row="true" Spacing="1">
+                                @if (context.Icon is not null)
+                                {
+                                    <MudIcon Icon="@context.Icon" Size="Size.Small" />
+                                }
+                                <MudText Typo="Typo.body2">@context.Text</MudText>
+                            </MudStack>
+                        </MudElement>
+                    </ChildContent>
+                </MudTooltip>
             }
         </CellTemplate>
     </MudCalendar>
@@ -56,13 +80,29 @@
         return BafColor.FromBackground(item.ColorHex).ToStyle();
     }
 
-    private static string GetTooltip(BafCalendarItem item)
+    private static string GetTimeRange(BafCalendarItem item)
     {
-        if (string.IsNullOrWhiteSpace(item.Description))
+        if (item.AllDay)
         {
-            return item.Text;
+            // End is rendered inclusive, so a single day event ends on the same date.
+            if (item.End is null || item.End.Value.Date == item.Start.Date)
+            {
+                return item.Start.ToString("d");
+            }
+
+            return $"{item.Start:d} - {item.End.Value:d}";
         }
 
-        return $"{item.Text} - {item.Description}";
+        if (item.End is null)
+        {
+            return item.Start.ToString("g");
+        }
+
+        if (item.End.Value.Date == item.Start.Date)
+        {
+            return $"{item.Start:g} - {item.End.Value:t}";
+        }
+
+        return $"{item.Start:g} - {item.End.Value:g}";
     }
 }
