@@ -1,8 +1,10 @@
-﻿<div style="@GetGridStyle()">
+﻿@using MudBlazor
+
+<MudElement HtmlTag="div" Class="mt-4" Style="@GetGridStyle()">
     <CascadingValue Value="this">
         @ChildContent
     </CascadingValue>
-</div>
+</MudElement>
 
 @code {
     [Parameter] public int Columns { get; set; } = 4;

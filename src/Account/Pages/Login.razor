@@ -6,9 +6,9 @@
 
 @using System.ComponentModel.DataAnnotations
 @using Avolutions.Baf.Blazor.Layouts
+@using Avolutions.Baf.Core.Identity.Abstractions
 @using Avolutions.Baf.Core.Identity.Models
 @using Avolutions.Baf.Core.Identity.Services
-@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Http
@@ -16,10 +16,9 @@
 @using MudBlazor
 @using MudBlazor.StaticInput
 
-@inject SignInManager<User> SignInManager
-@inject NavigationManager NavigationManager
+@inject ICurrentUser CurrentUser
 @inject IdentityRedirectManager RedirectManager
-@inject AuthenticationStateProvider AuthProvider
+@inject SignInManager<User> SignInManager
 
 <PageTitle>Log in</PageTitle>
 
@@ -80,12 +79,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity?.IsAuthenticated == true)
+        if (await CurrentUser.IsAuthenticatedAsync())
         {
-            NavigationManager.NavigateTo("/", forceLoad: true);
+            RedirectManager.RedirectTo("/");
         }
     }
     

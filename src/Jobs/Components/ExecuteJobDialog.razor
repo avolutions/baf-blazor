@@ -1,15 +1,14 @@
 ﻿@using System.Text.Json
-@using Avolutions.Baf.Blazor.Account.Extensions
 @using Avolutions.Baf.Blazor.Jobs.Abstractions
 @using Avolutions.Baf.Blazor.Jobs.Resources
+@using Avolutions.Baf.Core.Identity.Abstractions
 @using Avolutions.Baf.Core.Jobs.Abstractions
 @using Avolutions.Baf.Core.Resources
-@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 
 @inject IJobService JobService
-@inject AuthenticationStateProvider Auth
+@inject ICurrentUser CurrentUser
 
 @inject IStringLocalizer<ExecuteJobDialogResources> L
 @inject IStringLocalizer<SharedResources> LShared
@@ -64,7 +63,7 @@
         var json  = JsonSerializer.Serialize(_model, Job.ParamType);
         var typed = JsonSerializer.Deserialize(json, Job.ParamType)!;
 
-        var userId = await Auth.GetUserIdAsync();
+        var userId = await CurrentUser.GetIdAsync();
         await JobService.EnqueueAsync(Job.Key, typed, userId, CancellationToken.None);
 
         MudDialog.Close(DialogResult.Ok(true));

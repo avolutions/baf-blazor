@@ -1,12 +1,12 @@
 ﻿@typeparam T where T : IMenu
 
+@using Avolutions.Baf.Core.Identity.Abstractions
 @using Avolutions.Baf.Core.Menu.Abstractions
 @using Avolutions.Baf.Core.Menu.Models
 @using Avolutions.Baf.Core.Menu.Services
-@using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazor
 
-@inject AuthenticationStateProvider AuthStateProvider
+@inject ICurrentUser CurrentUser
 @inject MenuProvider<T> MenuProvider
 
 <MudNavMenu Bordered="true" Color="Color.Primary" Margin="Margin.Normal">
@@ -24,8 +24,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        var user = await CurrentUser.GetPrincipalAsync();
 
         _menuItems = MenuProvider.GetMenuItemsVisibleToUser(user);
     }
