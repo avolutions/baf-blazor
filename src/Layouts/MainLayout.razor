@@ -1,7 +1,8 @@
 ﻿@using Avolutions.Baf.Blazor.Account.Components
-@using Avolutions.Baf.Blazor.Account.Extensions
 @using Avolutions.Baf.Blazor.Search.Components
 @using Avolutions.Baf.Blazor.Theme.Settings
+@using Avolutions.Baf.Core.Identity.Abstractions
+@using Avolutions.Baf.Core.Identity.Models
 @using Avolutions.Baf.Core.Loading.Abstractions
 @using Avolutions.Baf.Core.SystemSettings
 @using Microsoft.AspNetCore.Components.Authorization
@@ -11,11 +12,11 @@
 
 @implements IDisposable
 
-@inject ILoadingService LoadingService
 @inject IBlockingLoadingService BlockingLoadingService
+@inject ICurrentUser CurrentUser
+@inject ILoadingService LoadingService
 @inject ISettings<ThemeSettings> ThemeSettings
 @inject ISettings<SystemSettings> SystemSettings
-@inject AuthenticationStateProvider Auth
 
 <MudThemeProvider Theme="@_theme"/>
 <MudPopoverProvider />
@@ -34,18 +35,15 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                @if (_userId is not null)
-                {
-                    <UserAvatar UserId="(Guid)_userId" Size="Size.Small" WithName="true"/>
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken/>
-                        <MudIconButton
-                            Icon="@Icons.Material.Filled.Logout"
-                            ButtonType="ButtonType.Submit"
-                            Color="Color.Inherit"
-                            Class="ml-2"/>
-                    </form>
-                }
+                <UserAvatar UserId="_userInfo.Id" Size="Size.Small" WithName="true"/>
+                <form action="Account/Logout" method="post">
+                    <AntiforgeryToken/>
+                    <MudIconButton
+                        Icon="@Icons.Material.Filled.Logout"
+                        ButtonType="ButtonType.Submit"
+                        Color="Color.Inherit"
+                        Class="ml-2"/>
+                </form>
             </Authorized>
         </AuthorizeView>
     </MudAppBar>
@@ -78,9 +76,7 @@
 @code {
     private bool _drawerOpen = true;
     private MudTheme _theme = new();
-    private Guid? _userId;
-
-    [CascadingParameter] private Task<AuthenticationState> AuthTask { get; set; } = null!;
+    private UserInfo _userInfo = UserInfo.Unknown;
 
     private void DrawerToggle()
     {
@@ -92,7 +88,7 @@
         LoadingService.OnLoadingChanged += OnLoadingChanged;
         BlockingLoadingService.OnLoadingChanged += OnLoadingChanged;
         _theme = Theme.Create(ThemeSettings.Value);
-        _userId = await Auth.GetUserIdAsync();
+        _userInfo = await CurrentUser.GetUserInfoAsync();
     }
     
     public void Dispose()
