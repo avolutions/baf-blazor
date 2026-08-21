@@ -3,107 +3,274 @@
 
 @using Avolutions.Baf.Blazor.DataTable.Models
 @using Avolutions.Baf.Blazor.DataTable.Resources
+@using Avolutions.Baf.Core.Lists
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 
 @inject IStringLocalizer<DataTableResources> L
 
 <div class="baf-data-table">
-    @if (Filter is not null)
-    {
-        <MudTextField @bind-Value="_searchTerm"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      Class="mb-4"
-                      Clearable="true"
-                      Immediate="true"
-                      Placeholder=@L["SearchPlaceholder"]
-                      Variant="Variant.Outlined" />
-    }
+    <CascadingValue Value="this" IsFixed="true">
+        @FieldTemplates
 
-    <MudDataGrid T="T"
-                 HeaderClass="@(ShowHeader ? string.Empty : "no-header")"
-                 Hover="true"
-                 Items="Items"
-                 Loading="Loading"
-                 LoadingProgressColor="Color.Secondary"
-                 QuickFilter="CombinedFilter"
-                 RowClick="OnRowClick"
-                 RowsPerPage="@(ShowPaging ? 10 : int.MaxValue)"
-                 RowClassFunc="RowClassFunc"
-                 SortMode="SortMode.Single"
-                 @attributes="AdditionalAttributes"
-                 ChildRowContent="@(ChildRowContent is null 
-                                      ? null 
-                                      : (RenderFragment<CellContext<T>>)(ctx => ChildRowContent(ctx)))">
-        
-        <Columns>
-            @Columns
-            
-            @if (RowActions is not null && RowActions.Count > 0)
-            {
-                <TemplateColumn StickyRight="true" CellStyle="width: auto; white-space: nowrap; padding: 0 5pt; width: 1%">
-                    <CellTemplate>
-                        <div class="row-action-buttons">
-                            @foreach (var action in RowActions)
+        @if (HasToolbar)
+        {
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      StretchItems="StretchItems.Start"
+                      Justify="Justify.FlexEnd"
+                      Spacing="2"
+                      Class="mb-4">
+                @if (Filter is not null)
+                {
+                    <MudTextField @bind-Value="_searchTerm"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Clearable="true"
+                                  Immediate="true"
+                                  Placeholder=@L["SearchPlaceholder"]
+                                  Variant="Variant.Outlined" />
+                } else
+                {
+                    <MudSpacer />
+                }
+
+                @if (ShowColumnSelector && Fields is not null)
+                {
+                    <div style="position: relative;">
+                        <MudTooltip Text=@L["Toolbar.Columns"]>
+                            <MudIconButton Icon="@Icons.Material.Filled.Tune"
+                                           OnClick="@(() => _columnSelectorOpen = !_columnSelectorOpen)" />
+                        </MudTooltip>
+
+                        <MudPopover Open="@_columnSelectorOpen"
+                                    AnchorOrigin="Origin.BottomRight"
+                                    TransformOrigin="Origin.TopRight"
+                                    Class="pa-2"
+                                    Style="min-width: 300px;">
+                            @foreach (var field in Fields)
                             {
-                                <MudTooltip Text="@action.GetText(context.Item)"
-                                            Disabled="@(!action.IsVisible(context.Item))"
-                                            ShowOnFocus="false">
-                                    <MudIconButton Class="@(!action.IsVisible(context.Item) ? "invisible" : "")"
-                                                   Color="@action.GetColor(context.Item)"
-                                                   Disabled="@action.IsDisabled(context.Item)"
-                                                   Ripple="@(!action.IsDisabled(context.Item))"
-                                                   Icon="@action.GetIcon(context.Item)"
-                                                   Size="@action.GetSize(context.Item)"
-                                                   OnClick="@(() => action.InvokeAsync(context.Item))" />
-                                </MudTooltip>
+                                var current = field;
+                                var index = Fields.IndexOf(current);
+
+                                <div class="d-flex align-center" style="gap: 4px;">
+                                    <MudCheckBox T="bool"
+                                                 Value="@current.IsVisible"
+                                                 ValueChanged="@(value => SetFieldVisible(current, value))"
+                                                 Disabled="@IsLastVisibleField(current)"
+                                                 Label="@current.Label"
+                                                 Dense="true"
+                                                 Class="flex-grow-1" />
+
+                                    <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward"
+                                                   Size="Size.Small"
+                                                   Disabled="@(index == 0)"
+                                                   OnClick="@(() => MoveField(current, -1))" />
+
+                                    <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward"
+                                                   Size="Size.Small"
+                                                   Disabled="@(index == Fields.Count - 1)"
+                                                   OnClick="@(() => MoveField(current, 1))" />
+                                </div>
                             }
-                        </div>
-                    </CellTemplate>
-                </TemplateColumn>
-            }
-        </Columns>
-        
-        <NoRecordsContent>
-            @if(NoRecordsContent is null)
-            {
-                <MudText>@L["NoRecordsFound"]</MudText>
-            }
-            else
-            {
-                @NoRecordsContent
-            }
-        </NoRecordsContent>
-        
-        <PagerContent>
-            @if (ShowPaging)
-            {
-                <MudDataGridPager
-                    RowsPerPageString=@L["Pager.RowsPerPage"]
-                    InfoFormat=@L["Pager.InfoFormat"]/>
-            }
-        </PagerContent>
-    </MudDataGrid>
+
+                            <div class="d-flex justify-end mt-2">
+                                <MudButton Size="Size.Small" OnClick="@(() => _columnSelectorOpen = false)">
+                                    @L["Toolbar.Close"]
+                                </MudButton>
+                            </div>
+                        </MudPopover>
+                    </div>
+                }
+
+                @if (ShowExport && Fields is not null)
+                {
+                    <MudTooltip Text=@L["Toolbar.Export"]>
+                        <MudIconButton Icon="@Icons.Material.Outlined.FileDownload"
+                                       OnClick="ExportAsync" />
+                    </MudTooltip>
+                }
+            </MudStack>
+        }
+
+        <MudDataGrid T="T"
+                     HeaderClass="@(ShowHeader ? string.Empty : "no-header")"
+                     Hover="true"
+                     Items="Items"
+                     Loading="Loading"
+                     LoadingProgressColor="Color.Secondary"
+                     QuickFilter="CombinedFilter"
+                     RowClick="OnRowClick"
+                     RowsPerPage="@(ShowPaging ? 10 : int.MaxValue)"
+                     RowClassFunc="RowClassFunc"
+                     SortMode="SortMode.Single"
+                     @attributes="AdditionalAttributes"
+                     ChildRowContent="@(ChildRowContent is null 
+                                          ? null 
+                                          : (RenderFragment<CellContext<T>>)(ctx => ChildRowContent(ctx)))">
+            
+            <Columns>
+                @if (Fields is not null)
+                {
+                    @foreach (var field in Fields.Where(field => field.IsVisible))
+                    {
+                        var current = field;
+
+                        <TemplateColumn T="T"
+                                        PropertyName="@current.Path"
+                                        Sortable="true"
+                                        SortBy="@current.GetSortBy()"
+                                        Title="@current.Label">
+                            <CellTemplate>
+                                @if (_templates.GetValueOrDefault(current.Path) is { } template)
+                                {
+                                    @template(context)
+                                }
+                                else
+                                {
+                                    @current.GetText(context.Item)
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                    }
+                }
+                
+                @Columns
+
+                @if (RowActions is not null && RowActions.Count > 0)
+                {
+                    <TemplateColumn StickyRight="true" CellStyle="width: auto; white-space: nowrap; padding: 0 5pt; width: 1%">
+                        <CellTemplate>
+                            <div class="row-action-buttons">
+                                @foreach (var action in RowActions)
+                                {
+                                    <MudTooltip Text="@action.GetText(context.Item)"
+                                                Disabled="@(!action.IsVisible(context.Item))"
+                                                ShowOnFocus="false">
+                                        <MudIconButton Class="@(!action.IsVisible(context.Item) ? "invisible" : "")"
+                                                       Color="@action.GetColor(context.Item)"
+                                                       Disabled="@action.IsDisabled(context.Item)"
+                                                       Ripple="@(!action.IsDisabled(context.Item))"
+                                                       Icon="@action.GetIcon(context.Item)"
+                                                       Size="@action.GetSize(context.Item)"
+                                                       OnClick="@(() => action.InvokeAsync(context.Item))"/>
+                                    </MudTooltip>
+                                }
+                            </div>
+                        </CellTemplate>
+                    </TemplateColumn>
+                }
+            </Columns>
+            
+            <NoRecordsContent>
+                @if(NoRecordsContent is null)
+                {
+                    <MudText>@L["NoRecordsFound"]</MudText>
+                }
+                else
+                {
+                    @NoRecordsContent
+                }
+            </NoRecordsContent>
+            
+            <PagerContent>
+                @if (ShowPaging)
+                {
+                    <MudDataGridPager
+                        RowsPerPageString=@L["Pager.RowsPerPage"]
+                        InfoFormat=@L["Pager.InfoFormat"]/>
+                }
+            </PagerContent>
+        </MudDataGrid>
+    </CascadingValue>
 </div>
 
 @code {
-    [Parameter] public RenderFragment<CellContext<T>>? ChildRowContent { get; set; }
-    [Parameter] public RenderFragment? Columns { get; set; }
-    [Parameter] public RenderFragment? NoRecordsContent { get; set; }
-    
+    [Parameter] public List<FieldDefinition<T>>? Fields { get; set; }
     [Parameter] public Func<T, string, bool>? Filter { get; set; }
     [Parameter] public required IEnumerable<T> Items { get; set; }
     [Parameter] public bool Loading { get; set; }
     [Parameter] public EventCallback<DataGridRowClickEventArgs<T>> OnRowClick { get; set; }
     [Parameter] public List<RowAction<T>>? RowActions { get; set; }
     [Parameter] public Func<T, int, string>? RowClassFunc { get; set; }
-    [Parameter] public bool ShowPaging { get; set; } = true;
+    [Parameter] public bool ShowColumnSelector { get; set; } = true;
+    [Parameter] public bool ShowExport { get; set; }
     [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public bool ShowPaging { get; set; } = true;
     
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
     
+    [Parameter] public RenderFragment<CellContext<T>>? ChildRowContent { get; set; }
+    [Parameter] public RenderFragment? Columns { get; set; }
+    [Parameter] public RenderFragment? NoRecordsContent { get; set; }
+    [Parameter] public RenderFragment? FieldTemplates { get; set; }
+    
     private string _searchTerm = string.Empty;
+    private readonly Dictionary<string, RenderFragment<CellContext<T>>> _templates = [];
+    private bool _columnSelectorOpen;
+    
+    private bool HasToolbar =>
+        Filter is not null
+        || (Fields is not null && (ShowColumnSelector || ShowExport));
+
+    public void RegisterTemplate(string path, RenderFragment<CellContext<T>> template)
+    {
+        _templates[path] = template;
+    }
+
+    public void UnregisterTemplate(string path)
+    {
+        _templates.Remove(path);
+    }
+    
+    private void SetFieldVisible(FieldDefinition<T> field, bool visible)
+    {
+        if (Fields is null)
+        {
+            return;
+        }
+
+        if (!visible && Fields.Count(item => item.IsVisible) <= 1)
+        {
+            return;
+        }
+
+        field.IsVisible = visible;
+    }
+
+    private bool IsLastVisibleField(FieldDefinition<T> field)
+    {
+        if (Fields is null)
+        {
+            return false;
+        }
+
+        return field.IsVisible && Fields.Count(item => item.IsVisible) == 1;
+    }
+
+    private void MoveField(FieldDefinition<T> field, int offset)
+    {
+        if (Fields is null)
+        {
+            return;
+        }
+
+        var index = Fields.IndexOf(field);
+        var target = index + offset;
+
+        if (target < 0 || target >= Fields.Count)
+        {
+            return;
+        }
+
+        Fields.RemoveAt(index);
+        Fields.Insert(target, field);
+    }
+
+    private Task ExportAsync()
+    {
+        return Task.CompletedTask;
+    }
     
     private bool CombinedFilter(T item)
     {
