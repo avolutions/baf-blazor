@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Avolutions.Baf.Blazor.Forms.Abstractions;
+using FluentValidation;
 using FluentValidation.Internal;
 
 namespace Avolutions.Baf.Blazor.Forms.Helpers;
@@ -20,13 +21,13 @@ public static class FluentValidatorHelper
                 return [];
             }
             
-            var memberSel  = ValidatorOptions.Global.ValidatorSelectors
+            var memberSelector  = ValidatorOptions.Global.ValidatorSelectors
                 .MemberNameValidatorSelectorFactory([propertyName]);
-            var defaultSel = ValidatorOptions.Global.ValidatorSelectors
-                .RulesetValidatorSelectorFactory(["default"]);
+            var ruleSetSelector  = ValidatorOptions.Global.ValidatorSelectors
+                .RulesetValidatorSelectorFactory(["default", RuleSets.Form]);
             
             var context = new ValidationContext<T>(typed, new PropertyChain(),
-                new AndSelector(memberSel, defaultSel));
+                new AndSelector(memberSelector, ruleSetSelector));
 
             var result = await validator.ValidateAsync(context);
 
