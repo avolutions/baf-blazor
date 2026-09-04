@@ -70,7 +70,25 @@
     [Parameter] public EventCallback<T?> OnChanged { get; set; }
     
     private EntityLockStatus? _alertStatus;
+    private bool _blockedDialogShown;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _blockedDialogShown)
+        {
+            return;
+        }
+
+        if (!await TryShowBlockedAsync(Value))
+        {
+            return;
+        }
+
+        _blockedDialogShown = true;
+
+        await ClearValueAsync();
+    }
+    
     protected override void OnParametersSet()
     {
         if (!HandleLockStatus)
@@ -84,20 +102,30 @@
     
     private async Task OnValueChanged(T value)
     {
-        if (HandleLockStatus && value is ILockable lockable && lockable.LockStatus.IsBlocked)
+        if (await TryShowBlockedAsync(value))
         {
-            await LockStatusDialogService.ShowBlockedAsync(
-                AutocompleteProvider.ToString(value),
-                lockable.LockStatus);
-
             return;
         }
-        
+
         _alertStatus = HandleLockStatus ? GetAlertStatus(value) : null;
-        
+
         Value = value;
         await ValueChanged.InvokeAsync(value);
         await OnChanged.InvokeAsync(value);
+    }
+    
+    private async Task<bool> TryShowBlockedAsync(T? value)
+    {
+        if (!HandleLockStatus || value is not ILockable { LockStatus.IsBlocked: true } lockable)
+        {
+            return false;
+        }
+
+        await LockStatusDialogService.ShowBlockedAsync(
+            AutocompleteProvider.ToString(value),
+            lockable.LockStatus);
+
+        return true;
     }
     
     private static EntityLockStatus? GetAlertStatus(T? value)
@@ -113,6 +141,17 @@
         }
 
         return lockable.LockStatus;
+    }
+    
+    private async Task ClearValueAsync()
+    {
+        Value = default!;
+        _alertStatus = null;
+
+        await ValueChanged.InvokeAsync(Value);
+        await OnChanged.InvokeAsync(Value);
+
+        StateHasChanged();
     }
 
     private static Severity ToSeverity(EntityLockLevel level) => level switch
