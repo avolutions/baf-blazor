@@ -131,6 +131,8 @@
     private bool _isImporting;
     private ImportResultSummary? _summary;
 
+    private const long MaxFileSize = 500 * 1024 * 1024; // 50 MB
+    
     private ImportResultSummary GetResultSummary(ImportResult result)
     {
         if (!result.Success && result.RecordsProcessed == 0)
@@ -182,11 +184,29 @@
 
         _isImporting = true;
         _importResult = null;
-        
+        _summary = null;
+
+        var tempPath = Path.GetTempFileName();
+
         try
         {
-            await using var stream = _selectedFile.OpenReadStream(long.MaxValue);
-            _importResult = await _selectedImporter.ImportAsync(stream, _existingHandling);
+            // Transfer the whole file from the browser first (fast, no processing in between)
+            await using (var browserStream = _selectedFile.OpenReadStream(MaxFileSize))
+            await using (var tempFile = File.Create(tempPath))
+            {
+                await browserStream.CopyToAsync(tempFile);
+            }
+
+            // Import from the local file. The browser stream is closed, so no timeout can occur.
+            await using var localStream = new FileStream(
+                tempPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.None,
+                bufferSize: 81920,
+                FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+
+            _importResult = await _selectedImporter.ImportAsync(localStream, _existingHandling);
         }
         catch (Exception ex)
         {
@@ -198,13 +218,17 @@
         finally
         {
             _isImporting = false;
+
+            if (File.Exists(tempPath))
+            {
+                File.Delete(tempPath);
+            }
         }
 
         if (_importResult is not null)
         {
             _summary = GetResultSummary(_importResult);
-            var severity = GetResultSummary(_importResult);
-            SnackbarNotificationService.Show(severity.Message, severity.Severity);
+            SnackbarNotificationService.Show(_summary.Message, _summary.Severity);
         }
     }
     
