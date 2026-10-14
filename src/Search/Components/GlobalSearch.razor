@@ -47,8 +47,18 @@
                 @foreach (var result in _results)
                 {
                     <MudListItem OnClick="@(() => NavigateTo(result.Url))">
-                        <MudChip T="string">@result.Type</MudChip>
-                        <MudHighlighter Text="@result.Text" HighlightedText="@_searchTerm"></MudHighlighter>
+                        <span class="d-flex align-center">
+                            <MudChip T="string" Icon="@result.Icon">@result.Type</MudChip>
+                            <span class="d-flex flex-column">
+                                <span><MudHighlighter Text="@result.Text" HighlightedText="@_searchTerm"></MudHighlighter></span>
+                                @if (!string.IsNullOrWhiteSpace(result.Description))
+                                {
+                                    <span class="mud-typography-caption" style="color: var(--mud-palette-text-secondary)">
+                                        <MudHighlighter Text="@result.Description" HighlightedText="@_searchTerm"></MudHighlighter>
+                                    </span>
+                                }
+                            </span>
+                        </span>
                     </MudListItem>
                 }
             </MudList>
